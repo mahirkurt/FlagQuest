@@ -27,6 +27,7 @@ npm run build        # vite build → dist/ (+ sw.js, manifest.webmanifest)
 npm run preview      # üretim çıktısını yerelde servis eder
 npm run clean        # rm -rf dist server.js
 node scripts/marka-senkron.mjs    # public/ favicon ve PWA ikonlarını logo ailesinden tazeler
+node scripts/onizleme-uret.mjs    # tasarım sistemi önizleme sayfalarını (onizleme/*.png) yeniden üretir
 ```
 
 Test altyapısı, ESLint ve Prettier **yoktur**. Değişiklikten sonra en azından
@@ -81,6 +82,11 @@ kuralın tersidir — eski dosya adlarına bakarak eşleme yapma.
 Kitin seçilmeyen iki yönü (`B-damga`, `C-kanton`) ve yön seçiminin gerekçesi
 `assets/logo-adaylari/` altında karar kaydı olarak durur; uygulama bunları kullanmaz.
 Yön değiştirmek gerekirse izlenecek adımlar o klasörün README'sindedir.
+
+Tasarım sisteminin kapak grafiği (`components/Cover/preview.html`) da yürürlükteki
+amblemi taşır; önizleme sayfaları `scripts/onizleme-uret.mjs` ile yeniden üretilir.
+Betik React'i node_modules'tan paketler (CDN'e çıkmaz), her önizlemeyi gerçek içerik
+yüksekliğinde çeker ve iki temada kontrol sayfası üretir.
 
 ### Bozulmaması gereken kurallar
 

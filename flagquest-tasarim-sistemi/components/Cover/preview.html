@@ -9,7 +9,10 @@ html,body{margin:0;padding:0;background:var(--zemin)}
 .b-damga{fill:var(--damga-500)}
 .b-vize{fill:var(--vize-500)}
 .b-relief{fill:var(--cizgi-belirgin)}
-.b-desen circle,.b-desen path{stroke:var(--zemin);stroke-width:var(--kenar-kalin);fill:none}
+.kapak-amblem{position:absolute;left:523px;top:65px;width:170px;height:170px;display:block}
+.kapak-amblem--kagit{display:none}
+[data-theme="kagit"] .kapak-amblem--gece{display:none}
+[data-theme="kagit"] .kapak-amblem--kagit{display:block}
 .kapak-yazi{position:absolute;left:48px;bottom:42px;width:440px}
 .kapak-ad{margin:0;font-family:var(--font-baslik);font-size:72px;line-height:.92;font-weight:800;letter-spacing:-.03em;color:var(--metin)}
 .kapak-alt{margin:12px 0 0;font-family:var(--font-govde);font-size:14px;line-height:20px;color:var(--metin-silik)}
@@ -18,19 +21,16 @@ html,body{margin:0;padding:0;background:var(--zemin)}
 <svg class="kapak-svg" viewBox="0 0 960 300" width="960" height="300" aria-hidden="true">
 <!-- Bloklar: zemin-ters 256x300 tam boy dilim, altin-500 112x160, damga-500 112x80, vize-500 80x112, cizgi-belirgin 80x128; koseler yaricap-xl (24px). Kaplama: %43. -->
 <!-- Duzen: tek yuksek dilim + iki uydu sutunu; sutunlar arasi bosluk-4 (16px), sag sutun sag kenara dayanir. -->
-<!-- Desen: cift halka + 24 isinsal tirtil - pasaport giris damgasinin cemberi. Bu sistem kendini "dijital dunya pasaportu" olarak tanimlar ve ayni cember hem amblemde hem Damga bileseninde tasinir; bu yuzden desen odur. -->
+<!-- Kapak grafigi: yururlukteki amblem (Logo Kiti 2.0, Fly yonu) zemin-ters dilimin ustune konur. Amblem yeniden cizilmez, assets/Logo/svg icinden dosya olarak gosterilir; dilim tema ile ters dondugu icin amblemin acik/koyu zemin surumu CSS ile secilir. -->
 <!-- Olcek: kenarlar 80/112/128/160/256/300 = bosluk-4(16) katlari; koseler yaricap-xl; halka cizgi kalinligi kenar-kalin (2px). -->
 <rect x="480" y="0" width="256" height="300" class="b-slab"/>
-<g class="b-desen">
-  <circle cx="608" cy="150" r="100"/>
-  <circle cx="608" cy="150" r="72"/>
-  <path d="M608.0 70.0 L608.0 58.0 M628.7 72.7 L631.8 61.1 M648.0 80.7 L654.0 70.3 M664.6 93.4 L673.1 84.9 M677.3 110.0 L687.7 104.0 M685.3 129.3 L696.9 126.2 M688.0 150.0 L700.0 150.0 M685.3 170.7 L696.9 173.8 M677.3 190.0 L687.7 196.0 M664.6 206.6 L673.1 215.1 M648.0 219.3 L654.0 229.7 M628.7 227.3 L631.8 238.9 M608.0 230.0 L608.0 242.0 M587.3 227.3 L584.2 238.9 M568.0 219.3 L562.0 229.7 M551.4 206.6 L542.9 215.1 M538.7 190.0 L528.3 196.0 M530.7 170.7 L519.1 173.8 M528.0 150.0 L516.0 150.0 M530.7 129.3 L519.1 126.2 M538.7 110.0 L528.3 104.0 M551.4 93.4 L542.9 84.9 M568.0 80.7 L562.0 70.3 M587.3 72.7 L584.2 61.1"/>
-</g>
 <rect x="752" y="24"  width="112" height="160" rx="24" class="b-altin"/>
 <rect x="752" y="200" width="112" height="80"  rx="24" class="b-damga"/>
 <rect x="880" y="24"  width="80"  height="112" rx="24" class="b-vize"/>
 <rect x="880" y="152" width="80"  height="128" rx="24" class="b-relief"/>
 </svg>
+<img class="kapak-amblem kapak-amblem--gece" src="../../assets/Logo/svg/flagquest-fly-amblem-acik.svg" alt="" aria-hidden="true">
+<img class="kapak-amblem kapak-amblem--kagit" src="../../assets/Logo/svg/flagquest-fly-amblem-koyu.svg" alt="" aria-hidden="true">
   <div class="kapak-yazi">
     <p class="kapak-ad">FlagQuest</p>
     <p class="kapak-alt">195 bayrak, tek pasaport. Her doğru cevap bir damgadır.</p>
