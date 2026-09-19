@@ -5,7 +5,8 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { AlertTriangle, LogIn } from 'lucide-react';
 import { auth, db } from '../lib/firebase';
 import { useAuthStore, UserProfile } from '../store/useAuthStore';
-import { logoYolu, useTema } from '../lib/tema';
+import { useTema } from '../lib/tema';
+import { logoYolu } from '../lib/logo';
 import { Buton } from '../components/ds';
 
 export function Login() {
@@ -87,10 +88,12 @@ export function Login() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-zemin p-6">
       <div className="w-full max-w-sm rounded-xl border border-cizgi bg-zemin-yukseltilmis p-8 text-center">
+        {/* Dikey kilit 259,8 x 129 oranındadır; en az 140 px genişlikte kullanılır. */}
         <img
           src={logoYolu(tema, 'dikey')}
           alt="FlagQuest"
           width={160}
+          height={79}
           className="mx-auto mb-6 h-auto w-40"
         />
 

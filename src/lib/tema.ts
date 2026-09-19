@@ -18,10 +18,4 @@ export function useTema(): Tema {
   return useAuthStore((state) => ((state.user?.settings.darkMode ?? true) ? 'gece' : 'kagit'));
 }
 
-/**
- * Logo dosyaları renklerini devralmaz; her temanın kendi mürekkebi vardır.
- * "-acik" sürümleri koyu zemin içindir.
- */
-export function logoYolu(tema: Tema, cesit: 'yatay' | 'dikey' | 'amblem'): string {
-  return `/logo/flagquest-${cesit}${tema === 'gece' ? '-acik' : ''}.svg`;
-}
+// Logo varlıkları için bkz. lib/logo.ts — dosyalar tasarım sisteminden içe aktarılır.

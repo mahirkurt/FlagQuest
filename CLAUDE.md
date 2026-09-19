@@ -26,7 +26,7 @@ npm run lint         # tsc --noEmit — depodaki TEK otomatik kontrol, temiz ge�
 npm run build        # vite build → dist/ (+ sw.js, manifest.webmanifest)
 npm run preview      # üretim çıktısını yerelde servis eder
 npm run clean        # rm -rf dist server.js
-node scripts/generate-icons.mjs   # PWA ikonlarını resmî logo SVG'lerinden yeniden üretir
+node scripts/marka-senkron.mjs    # public/ favicon ve PWA ikonlarını logo ailesinden tazeler
 ```
 
 Test altyapısı, ESLint ve Prettier **yoktur**. Değişiklikten sonra en azından
@@ -56,7 +56,8 @@ doğru bildiği her ülke o pasaporta damga olarak mühürlenir.*
 | `src/ds.css` | `flagquest-tasarim-sistemi/components/bundle.css` | Bileşen stil tabakası (`fq-btn`, `fq-mod`, `fq-sik` …) |
 | `src/index.css` | — | İkisini içe aktarır ve `@theme inline` ile Tailwind'e bağlar |
 | `src/components/ds/` | `flagquest-tasarim-sistemi/components/index.d.ts` | 10 bileşenin React karşılığı |
-| `public/logo/` | `flagquest-tasarim-sistemi/assets/Logo/` | Yatay, dikey ve amblem logo dosyaları |
+| `src/lib/logo.ts` | `flagquest-tasarim-sistemi/assets/Logo/svg/` | Kilit ve amblem dosyalarını tema başına içe aktarır |
+| `public/favicon.*`, `public/pwa-*.png`, `public/apple-touch-icon.png` | `assets/Logo/` (betikle) | Sabit URL'den servis edilen giriş varlıkları |
 
 `src/tokens.css` ve `src/ds.css` **türetilmiş dosyalardır**: elle düzenlenmez. Sistem
 güncellenirse `flagquest-tasarim-sistemi/` içinden yeniden kopyalanır.
@@ -66,6 +67,20 @@ yapısı ve sınıf adları `bundle.css` ile birebir aynıdır, prop sözleşmes
 ile aynıdır. Yeni bir prop eklemeden önce bileşenin kendi
 `flagquest-tasarim-sistemi/components/<Ad>/README.md` dosyasını oku — orada "yapma"
 listesi vardır.
+
+### Logo ailesi
+
+Yürürlükteki aile **Logo Kiti 2.0, Fly yönü**: kırlangıç kuyruklu flama, iki şekil,
+iki mürekkep. `flagquest-tasarim-sistemi/assets/Logo/` altında `svg/`, `png/`, `ico/`
+olarak durur; kuralların tamamı `assets/Logo/README.md` dosyasındadır.
+
+**Son ek zemini belirtir, mürekkebi değil:** `-koyu` koyu zeminde (gece teması),
+`-acik` açık zeminde (kâğıt teması) kullanılır. Bu, emekli edilen 1.0 kitindeki
+kuralın tersidir — eski dosya adlarına bakarak eşleme yapma.
+
+Kitin seçilmeyen iki yönü (`B-damga`, `C-kanton`) ve yön seçiminin gerekçesi
+`assets/logo-adaylari/` altında karar kaydı olarak durur; uygulama bunları kullanmaz.
+Yön değiştirmek gerekirse izlenecek adımlar o klasörün README'sindedir.
 
 ### Bozulmaması gereken kurallar
 
@@ -96,9 +111,11 @@ Bunlar marka kitabının "Kurallar" bölümüdür ve kod incelemesinde aranır:
   belirtilir). Soru sorulurken `BayrakKarti`'nın `alt` metni **boş bırakılır**, yoksa
   cevap ekran okuyucuya sızar.
 - **Odak halkası kaldırılmaz** (`:focus-visible`, `src/index.css` temel katmanında).
-- **Logo yeniden çizilmez veya yeniden düzenlenmez.** `scripts/generate-icons.mjs` bu
-  yüzden ikonları elle çizmek yerine resmî SVG'leri başsız Chromium ile
-  rasterleştirir; Chromium yoksa `CHROME_PATH` ile verilir.
+- **Logo yeniden çizilmez veya yeniden düzenlenmez.** Uygulama içi logolar
+  `src/lib/logo.ts` üzerinden tasarım sisteminden içe aktarılır; `public/` altında
+  kopyası tutulmaz. Sabit URL isteyen favicon ve PWA ikonları `public/` altında
+  kopya taşır ve bunları `scripts/marka-senkron.mjs` kitteki hazır dosyalardan
+  kopyalar — ikon burada çizilmez, üretilmez.
 - **Sayılar Türkçe biçimdedir** (ondalık virgül, binlik nokta, `42 sn`). Biçimlendirme
   `src/lib/bicim.ts` üzerinden yapılır: `sayi`, `yuzde`, `sure`, `sureMs`, `ulkeKodu`.
   Ülke kodu arayüzde daima BÜYÜK HARF gösterilir.
@@ -118,7 +135,7 @@ src/
   components/ds/           tasarım sistemi bileşenleri (10 adet + tipler)
   components/              uygulamaya özel paylaşılan bileşenler
   data/countries.ts        195 ülke (kod, ad, başkent, bölge, funFact) + getFlagUrl()
-  lib/                     firebase, audio, tema, bicim, kitalar, modlar, badges, utils
+  lib/                     firebase, audio, tema, logo, bicim, kitalar, modlar, badges, utils
   pages/                   rota bileşenleri
   services/                countries.ts üzerine salt-okunur sorgu katmanı
   store/                   Zustand mağazaları — iş kurallarının tamamı burada
