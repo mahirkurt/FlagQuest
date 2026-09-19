@@ -1,316 +1,273 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Award, Search, X, Sparkles, BookOpen, 
-  MapPin, Users, Coins, ArrowLeft, CheckCircle
-} from 'lucide-react';
-import { countries, getFlagUrl, Country } from '../data/countries';
+import { ArrowLeft, Check, Lock, Search } from 'lucide-react';
+import { countries, Country, getFlagUrl } from '../data/countries';
 import { usePassportStore } from '../store/usePassportStore';
 import { useAuthStore } from '../store/useAuthStore';
-import { getUserTitle } from '../lib/badges';
+import { KITALAR, KITA_IKONLARI, ulkeKitasi, type Kita } from '../lib/kitalar';
+import { seviyeUnvani } from '../lib/badges';
+import { sayi, ulkeKodu, yuzde } from '../lib/bicim';
+import { cn, damgaAcisi } from '../lib/utils';
+import { BayrakKarti, Buton, Damga, Etiket } from '../components/ds';
+
+type Filtre = 'Tümü' | Kita;
+
+const FILTRELER: Filtre[] = ['Tümü', ...KITALAR];
 
 export function Passport() {
   const navigate = useNavigate();
   const user = useAuthStore(state => state.user);
-  const { stamps, getTotalUnlocked, getContinentStats } = usePassportStore();
-  
-  const [selectedRegion, setSelectedRegion] = useState<string>('Tümü');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+  const stamps = usePassportStore(state => state.stamps);
+  const getTotalUnlocked = usePassportStore(state => state.getTotalUnlocked);
+  const getContinentStats = usePassportStore(state => state.getContinentStats);
 
-  const totalUnlocked = getTotalUnlocked();
-  const totalCountries = countries.length;
-  const completionPercentage = ((totalUnlocked / totalCountries) * 100).toFixed(1);
-  const continentStats = getContinentStats();
-  const userTitle = getUserTitle(user?.level || 1);
+  const [arama, setArama] = useState('');
+  const [filtre, setFiltre] = useState<Filtre>('Tümü');
+  const [secili, setSecili] = useState<Country | null>(null);
 
-  const regions = ['Tümü', 'Avrupa', 'Asya', 'Afrika', 'Amerika', 'Okyanusya'];
+  const toplamDamga = getTotalUnlocked();
+  const kitaIstatistikleri = getContinentStats();
+  const tamamlanma = (toplamDamga / countries.length) * 100;
+  const unvan = seviyeUnvani(user?.level || 1);
 
-  const filteredCountries = countries.filter(c => {
-    const matchesRegion = selectedRegion === 'Tümü' || c.region === selectedRegion;
-    const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          c.capital.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesRegion && matchesSearch;
-  });
+  const sonuclar = useMemo(() => {
+    const sorgu = arama.trim().toLocaleLowerCase('tr');
+    return countries.filter((ulke) => {
+      const kitaUyar = filtre === 'Tümü' || ulkeKitasi(ulke.region) === filtre;
+      if (!kitaUyar) return false;
+      if (!sorgu) return true;
+      return (
+        ulke.name.toLocaleLowerCase('tr').includes(sorgu) ||
+        ulke.capital.toLocaleLowerCase('tr').includes(sorgu)
+      );
+    });
+  }, [arama, filtre]);
 
   return (
-    <div className="p-4 md:p-6 pb-32 max-w-2xl mx-auto">
-      {/* Back button & Title */}
-      <div className="flex items-center justify-between mb-4">
-        <button
-          onClick={() => navigate('/')}
-          className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Ana Sayfa
-        </button>
-        <span className="text-xs font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-950/50 px-2.5 py-1 rounded-full border border-indigo-200 dark:border-indigo-800">
-          Dijital Dünya Pasaportu
-        </span>
-      </div>
-
-      {/* Official Passport Booklet Header Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 text-white shadow-2xl border-2 border-amber-500/40 relative overflow-hidden mb-6"
+    <div className="mx-auto max-w-2xl p-4 pb-32">
+      <button
+        type="button"
+        onClick={() => navigate('/')}
+        className="etiket mb-4 inline-flex items-center gap-1.5 rounded-sm text-metin-silik hover:text-metin"
       >
-        <div className="absolute top-0 right-0 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-        
-        <div className="flex items-center justify-between mb-4 border-b border-amber-500/20 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-2xl shadow-inner">
-              🛂
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-black tracking-wider uppercase text-amber-300">
-                  Resmi Kaşif Pasaportu
-                </h2>
-              </div>
-              <p className="text-xs text-slate-300">
-                {user?.displayName || 'Dünya Seyyahı'} • <span className="text-amber-400 font-semibold">{userTitle.title}</span>
-              </p>
-            </div>
-          </div>
-          <div className="text-right">
-            <span className="text-2xl font-black text-amber-400">{totalUnlocked}</span>
-            <span className="text-xs text-slate-400 font-medium">/{totalCountries}</span>
-            <p className="text-[10px] text-slate-400">Damga</p>
-          </div>
+        <ArrowLeft size={14} aria-hidden="true" />
+        Ana sayfa
+      </button>
+
+      {/* Pasaport kapağı: gece dolgusu ve dekoratif MRZ şeridi. */}
+      <section className="relative overflow-hidden rounded-2xl bg-gece p-5 text-on-gece">
+        <div className="mrz pointer-events-none absolute inset-x-5 top-0 h-[18px] select-none overflow-hidden whitespace-nowrap opacity-[0.18]" aria-hidden="true">
+          P&lt;TURFLAGQUEST&lt;&lt;GEZGIN&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
         </div>
 
-        {/* Exploration Progress Bar */}
-        <div className="mb-2">
-          <div className="flex justify-between text-xs mb-1.5">
-            <span className="text-slate-300 font-medium">Dünya Keşif Tamamlanması</span>
-            <span className="font-bold text-amber-400">%{completionPercentage}</span>
+        <div className="mt-2 flex items-baseline justify-between gap-3">
+          <div>
+            <p className="belge-sm opacity-80">DÜNYA PASAPORTU · {unvan.toLocaleUpperCase('tr')}</p>
+            <h1 className="gorsel-xl mt-1 text-altin">{sayi(toplamDamga)} damga</h1>
           </div>
-          <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden border border-white/10">
-            <motion.div
-              className="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${completionPercentage}%` }}
-              transition={{ duration: 1 }}
-            />
-          </div>
+          <p className="belge text-altin">{yuzde(tamamlanma)}</p>
         </div>
 
-        <p className="text-[11px] text-slate-400 text-center mt-2">
-          Herhangi bir modda doğru bildiğin her bayrak pasaportuna kalıcı damga olarak mühürlenir.
-        </p>
-      </motion.div>
-
-      {/* Continents Progress Pills */}
-      <div className="grid grid-cols-5 gap-2 mb-6">
-        {Object.entries(continentStats).map(([region, stat]) => (
+        <div
+          className="mt-3 h-2 overflow-hidden rounded-full bg-white/15"
+          role="progressbar"
+          aria-valuenow={Math.round(tamamlanma)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Dünya keşif ilerlemesi"
+        >
           <div
-            key={region}
-            onClick={() => setSelectedRegion(region)}
-            className={`p-2 rounded-xl text-center cursor-pointer transition-all border ${
-              selectedRegion === region
-                ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-500/20'
-                : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-indigo-300'
-            }`}
-          >
-            <p className="text-[10px] font-medium truncate">{region}</p>
-            <p className="text-xs font-black mt-0.5">
-              {stat.unlocked}/{stat.total}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {/* Controls: Region tabs & Search */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="flex gap-1.5 overflow-x-auto pb-1 flex-1">
-          {regions.map((region) => (
-            <button
-              key={region}
-              onClick={() => setSelectedRegion(region)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${
-                selectedRegion === region
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
-              }`}
-            >
-              {region}
-            </button>
-          ))}
-        </div>
-
-        <div className="relative shrink-0 sm:w-48">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder="Ülke ara..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="h-full rounded-full bg-altin transition-[width] duration-500"
+            style={{ width: `${tamamlanma}%` }}
           />
         </div>
-      </div>
 
-      {/* Stamp Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {filteredCountries.map((country) => {
-          const stamp = stamps[country.code];
-          const isUnlocked = !!stamp;
+        <p className="govde-sm mt-2 opacity-80">
+          {sayi(countries.length - toplamDamga)} ülke kaldı. Doğru bildiğin her bayrak buraya
+          kalıcı damga olarak mühürlenir.
+        </p>
+      </section>
 
+      {/* Kıta ilerlemesi */}
+      <div className="mt-4 grid grid-cols-5 gap-2">
+        {KITALAR.map((kita) => {
+          const istatistik = kitaIstatistikleri[kita];
+          const Ikon = KITA_IKONLARI[kita];
+          const etkin = filtre === kita;
           return (
-            <motion.div
-              key={country.code}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setSelectedCountry(country)}
-              className={`p-3.5 rounded-2xl border cursor-pointer relative overflow-hidden transition-all flex flex-col items-center text-center ${
-                isUnlocked
-                  ? 'bg-white dark:bg-slate-900 border-indigo-200 dark:border-indigo-900/60 shadow-sm hover:shadow-md'
-                  : 'bg-slate-50 dark:bg-slate-900/40 border-dashed border-slate-200 dark:border-slate-800 opacity-60'
-              }`}
-            >
-              {/* Stamp Seal Badge */}
-              <div className="relative mb-2">
-                <div
-                  className={`w-14 h-10 rounded-lg overflow-hidden border shadow-sm flex items-center justify-center ${
-                    isUnlocked
-                      ? 'border-slate-300 dark:border-slate-700 bg-slate-100'
-                      : 'border-dashed border-slate-300 dark:border-slate-700 grayscale contrast-50'
-                  }`}
-                >
-                  <img
-                    src={getFlagUrl(country.code)}
-                    alt={country.name}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-
-                {isUnlocked && (
-                  <div
-                    className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[10px] shadow-sm font-bold"
-                    title={`${stamp.timesCorrect} kez doğru bilindi`}
-                  >
-                    ✓
-                  </div>
-                )}
-              </div>
-
-              <h4 className="font-bold text-xs text-slate-900 dark:text-white truncate w-full">
-                {country.name}
-              </h4>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate w-full">
-                {isUnlocked ? country.capital : 'Henüz Açılmadı'}
-              </p>
-
-              {isUnlocked && (
-                <span className="text-[9px] font-semibold text-indigo-500 dark:text-indigo-400 mt-1 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded-full border border-indigo-100 dark:border-indigo-900/40">
-                  {stamp.timesCorrect}x Mühür
-                </span>
+            <button
+              key={kita}
+              type="button"
+              onClick={() => setFiltre(etkin ? 'Tümü' : kita)}
+              aria-pressed={etkin}
+              className={cn(
+                'flex flex-col items-center gap-1 rounded-md border p-2 transition-colors',
+                etkin
+                  ? 'border-altin bg-altin-yumusak text-altin-600'
+                  : 'border-cizgi bg-zemin-yukseltilmis text-metin-yumusak hover:border-cizgi-belirgin'
               )}
-            </motion.div>
+            >
+              <Ikon size={16} aria-hidden="true" />
+              <span className="etiket-sm truncate">{kita.toLocaleUpperCase('tr')}</span>
+              <span className="belge-sm">
+                {sayi(istatistik.unlocked)}/{sayi(istatistik.total)}
+              </span>
+            </button>
           );
         })}
       </div>
 
-      {/* Stamp Detail Modal (Souvenir Visa Card) */}
-      <AnimatePresence>
-        {selectedCountry && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 relative overflow-hidden"
+      {/* Arama ve filtre */}
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="seritsiz flex flex-1 gap-2 overflow-x-auto pb-1">
+          {FILTRELER.map((f) => (
+            <button
+              key={f}
+              type="button"
+              onClick={() => setFiltre(f)}
+              aria-pressed={filtre === f}
+              className={cn(
+                'etiket shrink-0 rounded-sm border px-3 py-1.5 transition-colors',
+                filtre === f
+                  ? 'border-altin bg-altin-yumusak text-altin-600'
+                  : 'border-cizgi bg-zemin-yukseltilmis text-metin-yumusak hover:border-cizgi-belirgin'
+              )}
             >
-              <button
-                onClick={() => setSelectedCountry(null)}
-                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 flex items-center justify-center"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              {f}
+            </button>
+          ))}
+        </div>
 
-              {/* Visa Stamp Banner */}
-              <div className="text-center mb-4">
-                <div className="w-24 h-16 rounded-xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 mx-auto mb-3 shadow-md">
-                  <img
-                    src={getFlagUrl(selectedCountry.code)}
-                    alt={selectedCountry.name}
-                    className="w-full h-full object-cover"
+        <label className="relative shrink-0 sm:w-52">
+          <span className="sr-only">Pasaportta ülke ara</span>
+          <Search
+            size={16}
+            aria-hidden="true"
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-metin-silik"
+          />
+          <input
+            type="search"
+            value={arama}
+            onChange={(e) => setArama(e.target.value)}
+            placeholder="Ülke ara"
+            className="govde-sm w-full rounded-lg border border-cizgi bg-zemin-yukseltilmis py-2 pl-9 pr-3 text-metin"
+          />
+        </label>
+      </div>
+
+      {/* Damga tablosu */}
+      {sonuclar.length === 0 ? (
+        <p className="mt-6 rounded-xl border border-cizgi bg-zemin-yukseltilmis p-8 text-center govde-sm text-metin-yumusak">
+          Eşleşen ülke yok. Aramayı sadeleştir veya başka bir kıta seç.
+        </p>
+      ) : (
+        <ul className="mt-5 grid grid-cols-4 justify-items-center gap-4 sm:grid-cols-6">
+          {sonuclar.map((ulke) => {
+            const damga = stamps[ulke.code];
+            return (
+              <li key={ulke.code}>
+                <button
+                  type="button"
+                  onClick={() => setSecili(ulke)}
+                  aria-label={`${ulke.name} — ${damga ? 'mühürlendi' : 'henüz açılmadı'}`}
+                  className="rounded-md"
+                >
+                  <Damga
+                    ulkeKodu={ulke.code}
+                    ulkeAdi={ulke.name}
+                    bayrakSrc={getFlagUrl(ulke.code)}
+                    kazanildi={!!damga}
+                    aci={damgaAcisi(ulke.code)}
                   />
-                </div>
-                <h3 className="text-xl font-black text-slate-900 dark:text-white">
-                  {selectedCountry.name}
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {selectedCountry.region} • Başkent: {selectedCountry.capital}
-                </p>
-
-                {stamps[selectedCountry.code] ? (
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-3 py-1 rounded-full mt-2">
-                    <CheckCircle className="w-3.5 h-3.5" /> Pasaporta Mühürlendi ({stamps[selectedCountry.code].timesCorrect} kez doğru)
-                  </span>
-                ) : (
-                  <span className="inline-block text-xs font-semibold text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full mt-2">
-                    🔒 Henüz Açılmadı — Oyunda Doğru Bilerek Aç!
-                  </span>
-                )}
-              </div>
-
-              {/* Country Metadata Details */}
-              <div className="grid grid-cols-3 gap-2 mb-4 text-center">
-                <div className="bg-slate-50 dark:bg-slate-800/60 p-2 rounded-xl border border-slate-100 dark:border-slate-800">
-                  <span className="text-[10px] text-slate-400 font-medium">Bölge</span>
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                    {selectedCountry.region}
-                  </p>
-                </div>
-                <div className="bg-slate-50 dark:bg-slate-800/60 p-2 rounded-xl border border-slate-100 dark:border-slate-800">
-                  <span className="text-[10px] text-slate-400 font-medium">Başkent</span>
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
-                    {selectedCountry.capital}
-                  </p>
-                </div>
-                <div className="bg-slate-50 dark:bg-slate-800/60 p-2 rounded-xl border border-slate-100 dark:border-slate-800">
-                  <span className="text-[10px] text-slate-400 font-medium">Mühür Sayısı</span>
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                    {stamps[selectedCountry.code]?.timesCorrect || 0}x
-                  </p>
-                </div>
-              </div>
-
-              {/* Encyclopedia Did You Know */}
-              <div className="bg-indigo-50/80 dark:bg-indigo-950/40 p-3.5 rounded-2xl border border-indigo-200/60 dark:border-indigo-800/60 text-xs text-slate-700 dark:text-slate-300 mb-5 leading-relaxed">
-                <span className="font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 mb-1 text-[11px] uppercase tracking-wider">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                  Ansiklopedi Hatıra Notu
-                </span>
-                {selectedCountry.funFact}
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    setSelectedCountry(null);
-                    navigate('/countries');
-                  }}
-                  className="flex-1 py-3 bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 font-bold rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 border border-sky-200 dark:border-sky-800"
-                >
-                  <BookOpen className="w-4 h-4 text-sky-500" />
-                  Ansiklopediye Git
                 </button>
-                <button
-                  onClick={() => setSelectedCountry(null)}
-                  className="px-5 py-3 bg-slate-900 dark:bg-slate-800 text-white font-bold rounded-xl text-xs"
-                >
-                  Kapat
-                </button>
-              </div>
-            </motion.div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {secili && (
+        <DamgaKarti
+          ulke={secili}
+          muhurSayisi={stamps[secili.code]?.timesCorrect ?? 0}
+          onKapat={() => setSecili(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+function DamgaKarti({
+  ulke,
+  muhurSayisi,
+  onKapat,
+}: {
+  ulke: Country;
+  muhurSayisi: number;
+  onKapat: () => void;
+}) {
+  const kazanildi = muhurSayisi > 0;
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${ulke.name} damgası`}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--perde)] p-4"
+      onClick={onKapat}
+    >
+      <div
+        className="acilma max-h-full w-full max-w-md overflow-y-auto rounded-xl border border-cizgi bg-zemin-yukseltilmis p-5 shadow-lg"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <BayrakKarti
+          src={getFlagUrl(ulke.code)}
+          alt={`${ulke.name} bayrağı`}
+          altBilgi={
+            <>
+              <span>{ulke.region}</span>
+              <span>{ulkeKodu(ulke.code)}</span>
+            </>
+          }
+        />
+
+        <div className="mt-4 flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="gorsel-lg truncate text-metin">{ulke.name}</h2>
+            <p className="govde-sm text-metin-yumusak">Başkent: {ulke.capital}</p>
           </div>
-        )}
-      </AnimatePresence>
+          {kazanildi ? (
+            <Etiket renk="vize">MÜHÜRLENDİ</Etiket>
+          ) : (
+            <Etiket renk="altin">AÇILMADI</Etiket>
+          )}
+        </div>
+
+        <p className="govde-sm mt-3 flex items-center gap-2 rounded-md border border-cizgi bg-zemin-gomuk p-3 text-metin-yumusak">
+          {kazanildi ? (
+            <>
+              <Check size={16} className="shrink-0 text-vize" aria-hidden="true" />
+              Bu ülkeyi {sayi(muhurSayisi)} kez doğru bildin.
+            </>
+          ) : (
+            <>
+              <Lock size={16} className="shrink-0 text-metin-silik" aria-hidden="true" />
+              Bu bayrağı bir turda doğru bilince damga pasaportuna mühürlenir.
+            </>
+          )}
+        </p>
+
+        <div className="mt-3 rounded-md border border-cizgi bg-zemin-gomuk p-3">
+          <p className="belge-sm text-metin-silik">ANSİKLOPEDİ NOTU</p>
+          <p className="govde-sm mt-1 text-metin-yumusak">{ulke.funFact}</p>
+        </div>
+
+        <div className="mt-5">
+          <Buton cesit="birincil" boyut="lg" tamGenislik onClick={onKapat}>
+            Kapat
+          </Buton>
+        </div>
+      </div>
     </div>
   );
 }

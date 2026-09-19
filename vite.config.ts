@@ -18,8 +18,8 @@ export default defineConfig(() => {
           name: 'FlagQuest - Bayrak Bilgi Yarışması',
           short_name: 'FlagQuest',
           description: 'Eğlenceli, öğretici ve rekabetçi bir bayrak bilgi yarışması.',
-          theme_color: '#0f172a',
-          background_color: '#f8fafc',
+          theme_color: '#0a1524',
+          background_color: '#0a1524',
           display: 'standalone',
           icons: [
             {

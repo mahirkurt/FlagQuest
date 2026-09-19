@@ -5,6 +5,7 @@ import { usePassportStore } from './usePassportStore';
 import { useMistakeStore } from './useMistakeStore';
 import { useQuestStore } from './useQuestStore';
 import { useBadgeStore } from './useBadgeStore';
+import { kitaUlkeleri, type Kita } from '../lib/kitalar';
 
 export type GameMode = 
   | 'classic'        // 10 random flag questions
@@ -24,7 +25,7 @@ export interface Question {
 
 interface GameState {
   mode: GameMode;
-  selectedContinent?: string;
+  selectedContinent?: Kita;
   questions: Question[];
   currentQuestionIndex: number;
   score: number;
@@ -60,7 +61,7 @@ interface GameState {
   startTimeAttack: () => void;
   startReverse: () => void;
   startDetective: () => void;
-  startWorldTour: (continent: string) => void;
+  startWorldTour: (kita: Kita) => void;
   startMistakePractice: () => boolean;
   startDailyChallenge: () => void;
   startSinglePlayer: () => void; // alias for classic
@@ -236,12 +237,15 @@ export const useGameStore = create<GameState>((set, get) => ({
     });
   },
 
-  startWorldTour: (continent: string) => {
-    const continentCountries = countries.filter(c => c.region.toLowerCase() === continent.toLowerCase());
+  startWorldTour: (kita: Kita) => {
+    // Kıta havuzu lib/kitalar.ts üzerinden gelir: ham bölge alanı "Kuzey Amerika",
+    // "Güney Amerika" ve "Avrupa/Asya" değerlerini de kullandığı için düz metin
+    // karşılaştırması bazı kıtalarda boş havuz üretirdi.
+    const continentCountries = kitaUlkeleri(kita);
     const now = Date.now();
     set({
       mode: 'world_tour',
-      selectedContinent: continent,
+      selectedContinent: kita,
       questions: generateQuestionSet(continentCountries, 6),
       currentQuestionIndex: 0,
       score: 0,

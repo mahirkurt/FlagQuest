@@ -1,1 +1,139 @@
 @import "tailwindcss";
+@import "./tokens.css";
+@import "./ds.css";
+
+/* Tasarım sistemi token'larını Tailwind yardımcı sınıflarına bağlar.
+   Ham Tailwind paleti (slate, indigo, purple, emerald, rose) kullanımdan
+   kaldırılmıştır; renk, yazı tipi, yarıçap ve gölge yalnızca bu adlar
+   üzerinden kullanılır. */
+@theme inline {
+  --color-zemin: var(--zemin);
+  --color-zemin-yukseltilmis: var(--zemin-yukseltilmis);
+  --color-zemin-gomuk: var(--zemin-gomuk);
+  --color-zemin-ters: var(--zemin-ters);
+
+  --color-metin: var(--metin);
+  --color-metin-yumusak: var(--metin-yumusak);
+  --color-metin-silik: var(--metin-silik);
+  --color-metin-ters: var(--metin-ters);
+
+  --color-cizgi: var(--cizgi);
+  --color-cizgi-belirgin: var(--cizgi-belirgin);
+
+  --color-gece: var(--gece);
+  --color-on-gece: var(--on-gece);
+  --color-odak: var(--odak);
+
+  --color-altin: var(--altin-500);
+  --color-altin-600: var(--altin-600);
+  --color-altin-yumusak: var(--altin-yumusak);
+  --color-on-altin: var(--on-altin);
+
+  --color-damga: var(--damga-500);
+  --color-damga-yumusak: var(--damga-yumusak);
+  --color-on-damga: var(--on-damga);
+
+  --color-vize: var(--vize-500);
+  --color-vize-yumusak: var(--vize-yumusak);
+  --color-on-vize: var(--on-vize);
+
+  --color-meridyen: var(--meridyen-500);
+  --color-meridyen-yumusak: var(--meridyen-yumusak);
+
+  --color-erguvan: var(--erguvan-500);
+  --color-erguvan-yumusak: var(--erguvan-yumusak);
+
+  --color-bozkir: var(--bozkir-500);
+  --color-bozkir-yumusak: var(--bozkir-yumusak);
+
+  --font-baslik: var(--font-baslik);
+  --font-govde: var(--font-govde);
+  --font-belge: var(--font-belge);
+
+  --radius-sm: var(--yaricap-sm);
+  --radius-md: var(--yaricap-md);
+  --radius-lg: var(--yaricap-lg);
+  --radius-xl: var(--yaricap-xl);
+  --radius-2xl: var(--yaricap-2xl);
+  --radius-full: var(--yaricap-tam);
+
+  --shadow-sm: var(--golge-sm);
+  --shadow-md: var(--golge-md);
+  --shadow-lg: var(--golge-lg);
+  --shadow-baski: var(--golge-baski);
+}
+
+@layer base {
+  html {
+    background: var(--zemin);
+  }
+
+  body {
+    margin: 0;
+    background: var(--zemin);
+    color: var(--metin);
+    font-family: var(--font-govde);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Odak halkası hiçbir koşulda kaldırılmaz; boşluk halkası zorunludur. */
+  :focus-visible {
+    outline: var(--kenar-kalin) solid var(--odak);
+    outline-offset: 2px;
+    border-radius: var(--yaricap-sm);
+  }
+
+  ::placeholder {
+    color: var(--metin-silik);
+  }
+}
+
+/* Hareket: yalnızca üç kalıp vardır ve dördüncüsü yoktur.
+   1) basılma — translateY(1–2px); bileşen CSS'inde (:active).
+   2) açılma — opaklık + 8–15px yukarı kayma; aşağıdaki .acilma.
+   3) ilerleme — width, 500 ms; ilerleme çubuklarında.
+   prefers-reduced-motion altında süreler sıfırlanır, yalnızca opaklık kalır. */
+@keyframes fq-acilma {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.acilma {
+  animation: fq-acilma 180ms ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes fq-acilma {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Yatay kaydırma şeridi arayüz ögesi değildir; gizlenir. */
+.seritsiz {
+  scrollbar-width: none;
+}
+.seritsiz::-webkit-scrollbar {
+  display: none;
+}
