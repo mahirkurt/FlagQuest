@@ -1,0 +1,15 @@
+<!-- @dsCard group="Yapı" height=170 subtitle="Beş hedef; ortadaki yükseltilmiş Oyna düğmesi." -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Figtree:wght@400..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"><style>body{margin:0;padding:20px;background:var(--zemin);font-family:var(--font-govde);-webkit-font-smoothing:antialiased}.wrap{display:flex;flex-direction:column;gap:14px;max-width:560px}.satir{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.not{font:600 10.5px/14px var(--font-govde);letter-spacing:.06em;text-transform:uppercase;color:var(--metin-silik)}</style>
+<div id="r"></div>
+<script>
+
+var h=React.createElement,F=window.FlagQuest;
+var ogeler=[
+ {id:"ana",etiket:"Ana Sayfa",ikon:h("svg",{width:20,height:20,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.8,strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":"true",dangerouslySetInnerHTML:{__html:"<path d=\"M4 10.5L12 4l8 6.5V19a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 014 19z\"/>"}})},
+ {id:"pasaport",etiket:"Pasaport",ikon:h("svg",{width:20,height:20,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.8,strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":"true",dangerouslySetInnerHTML:{__html:"<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M15.5 8.5l-2 5-5 2 2-5z\"/>"}})},
+ {id:"oyna",etiket:"Oyna",ikon:h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.8,strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":"true",dangerouslySetInnerHTML:{__html:"<path d=\"M7 4.5l12 7.5-12 7.5z\"/>"}}),oyna:true},
+ {id:"liderlik",etiket:"Liderlik",ikon:h("svg",{width:20,height:20,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.8,strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":"true",dangerouslySetInnerHTML:{__html:"<path d=\"M7 4h10v5a5 5 0 01-10 0zM7 6H4.5v1.5A3.5 3.5 0 007.5 11M17 6h2.5v1.5A3.5 3.5 0 0116.5 11M9.5 20h5M12 14v6\"/>"}})},
+ {id:"profil",etiket:"Profil",ikon:h("svg",{width:20,height:20,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.8,strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":"true",dangerouslySetInnerHTML:{__html:"<circle cx=\"12\" cy=\"8.5\" r=\"3.6\"/><path d=\"M4.5 20c0-3.6 3.4-6 7.5-6s7.5 2.4 7.5 6\"/>"}})}];
+ReactDOM.createRoot(document.getElementById("r")).render(
+  h("div",{style:{paddingTop:"30px"}},h(F.AltNavigasyon,{ogeler:ogeler,aktif:"pasaport"})));
+</script>

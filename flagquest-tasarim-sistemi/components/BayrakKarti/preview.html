@@ -1,0 +1,16 @@
+<!-- @dsCard group="Oyun" height=300 subtitle="Soru görseli ve dedektif bulanıklık kademeleri." -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Figtree:wght@400..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"><style>body{margin:0;padding:20px;background:var(--zemin);font-family:var(--font-govde);-webkit-font-smoothing:antialiased}.wrap{display:flex;flex-direction:column;gap:14px;max-width:560px}.satir{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.not{font:600 10.5px/14px var(--font-govde);letter-spacing:.06em;text-transform:uppercase;color:var(--metin-silik)}</style>
+<div id="r"></div>
+<script>
+
+var h=React.createElement,F=window.FlagQuest;
+var JP="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2090%2060%22%3E%3Crect%20width%3D%2290%22%20height%3D%2260%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2245%22%20cy%3D%2230%22%20r%3D%2218%22%20fill%3D%22%23bc002d%22%2F%3E%3C%2Fsvg%3E";
+ReactDOM.createRoot(document.getElementById("r")).render(
+  h("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"14px",maxWidth:"560px"}},
+    h("div",null,h("div",{className:"not",style:{marginBottom:"6px"}},"1. ipucu"),
+      h(F.BayrakKarti,{src:JP,durum:"bulanik1"})),
+    h("div",null,h("div",{className:"not",style:{marginBottom:"6px"}},"2. ipucu"),
+      h(F.BayrakKarti,{src:JP,durum:"bulanik2"})),
+    h("div",null,h("div",{className:"not",style:{marginBottom:"6px"}},"Açık"),
+      h(F.BayrakKarti,{src:JP,durum:"net",altBilgi:[h("span",{key:1},"Asya"),h("span",{key:2},"JP")]}))));
+</script>

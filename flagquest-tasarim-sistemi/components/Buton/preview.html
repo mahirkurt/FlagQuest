@@ -1,0 +1,25 @@
+<!-- @dsCard group="Temel" height=250 subtitle="Birincil eylem altın mühür baskısıdır." -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Figtree:wght@400..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"><style>body{margin:0;padding:20px;background:var(--zemin);font-family:var(--font-govde);-webkit-font-smoothing:antialiased}.wrap{display:flex;flex-direction:column;gap:14px;max-width:560px}.satir{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.not{font:600 10.5px/14px var(--font-govde);letter-spacing:.06em;text-transform:uppercase;color:var(--metin-silik)}</style>
+<div id="r"></div>
+<script>
+
+var h=React.createElement,F=window.FlagQuest;
+function App(){
+  return h("div",{className:"wrap"},
+    h("div",{className:"not"},"Çeşitler"),
+    h("div",{className:"satir"},
+      h(F.Buton,{cesit:"birincil",ikon:h("svg",{width:18,height:18,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.8,strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":"true",dangerouslySetInnerHTML:{__html:"<path d=\"M7 4.5l12 7.5-12 7.5z\"/>"}})},"Oyna"),
+      h(F.Buton,{cesit:"ikincil"},"Vazgeç"),
+      h(F.Buton,{cesit:"hayalet"},"Daha sonra"),
+      h(F.Buton,{cesit:"tehlike"},"Odayı kapat")),
+    h("div",{className:"not"},"Boyutlar"),
+    h("div",{className:"satir"},
+      h(F.Buton,{boyut:"sm"},"Küçük"),
+      h(F.Buton,{boyut:"md"},"Orta"),
+      h(F.Buton,{boyut:"lg",ikon:h("svg",{width:20,height:20,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.8,strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":"true",dangerouslySetInnerHTML:{__html:"<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M15.5 8.5l-2 5-5 2 2-5z\"/>"}})},"Sefere başla")),
+    h("div",{className:"not"},"Tam genişlik ve pasif"),
+    h(F.Buton,{tamGenislik:true,boyut:"lg"},"Sonraki soru"),
+    h(F.Buton,{tamGenislik:true,cesit:"ikincil",disabled:true},"Joker tükendi"));
+}
+ReactDOM.createRoot(document.getElementById("r")).render(h(App));
+</script>

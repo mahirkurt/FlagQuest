@@ -1,0 +1,14 @@
+<!-- @dsCard group="Oyun" height=330 subtitle="Doğru camgöbeği, yanlış damga mürekkebi; ikisi de sözcük taşır." -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Figtree:wght@400..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"><style>body{margin:0;padding:20px;background:var(--zemin);font-family:var(--font-govde);-webkit-font-smoothing:antialiased}.wrap{display:flex;flex-direction:column;gap:14px;max-width:560px}.satir{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.not{font:600 10.5px/14px var(--font-govde);letter-spacing:.06em;text-transform:uppercase;color:var(--metin-silik)}</style>
+<div id="r"></div>
+<script>
+
+var h=React.createElement,F=window.FlagQuest;
+ReactDOM.createRoot(document.getElementById("r")).render(
+  h("div",{className:"wrap"},
+    h(F.SikButonu,{harf:"A"},"Japonya"),
+    h(F.SikButonu,{harf:"B",durum:"secili"},"Güney Kore"),
+    h(F.SikButonu,{harf:"C",durum:"dogru"},"Endonezya"),
+    h(F.SikButonu,{harf:"D",durum:"yanlis"},"Bangladeş"),
+    h(F.SikButonu,{harf:"E",durum:"elendi"},"Moğolistan")));
+</script>
