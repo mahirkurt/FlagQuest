@@ -1,0 +1,8 @@
+{
+  "name": "FlagQuest",
+  "description": "195 BM üyesi ülkeyi kapsayan bayrak ve coğrafya oyunu. Pasaport damga koleksiyonu, akıllı hata kumbarası, blitz modu, ters bayrak, dedektif modu ve canlı çok oyunculu düellolar içerir.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

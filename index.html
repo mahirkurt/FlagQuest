@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>FlagQuest - Bayrak Bilgi Yarışması</title>
+    <meta name="description" content="195 BM üyesi ülkeyi kapsayan bayrak ve coğrafya oyunu. Pasaport damga koleksiyonu, akıllı hata kumbarası, blitz modu, ters bayrak, dedektif modu ve canlı çok oyunculu düellolar içerir." />
+    <meta property="og:title" content="FlagQuest" />
+    <meta property="og:description" content="195 BM üyesi ülkeyi kapsayan bayrak ve coğrafya oyunu. Pasaport damga koleksiyonu, akıllı hata kumbarası ve zengin oyun modları." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+    <script>
+      // Filter benign Vite development HMR/WebSocket errors caused by DISABLE_HMR in container sandbox
+      window.addEventListener('error', function(e) {
+        var msg = (e && e.message) ? e.message : '';
+        if (msg.indexOf("reading 'send'") !== -1 || msg.indexOf("failed to connect to websocket") !== -1) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+          return;
+        }
+        if (msg.indexOf('310') !== -1 || msg.indexOf('DdFnRFLR') !== -1 || msg.indexOf('Loading chunk') !== -1) {
+          if (!sessionStorage.getItem('pwa_sw_reloaded')) {
+            sessionStorage.setItem('pwa_sw_reloaded', '1');
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(function(regs) {
+                return Promise.all(regs.map(function(r) { return r.unregister(); }));
+              }).then(function() {
+                if ('caches' in window) {
+                  return caches.keys().then(function(keys) {
+                    return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+                  });
+                }
+              }).then(function() {
+                window.location.reload();
+              });
+            }
+          }
+        }
+      }, true);
+
+      window.addEventListener('unhandledrejection', function(e) {
+        var reason = e && e.reason;
+        var msg = reason ? (reason.message || String(reason)) : '';
+        if (msg.indexOf("reading 'send'") !== -1 || msg.indexOf("failed to connect to websocket") !== -1) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }
+      }, true);
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('controllerchange', function() {
+          window.location.reload();
+        });
+      }
+    </script>
+  </head>
+  <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50 antialiased overflow-hidden">
+    <div id="root" class="h-screen w-screen overflow-hidden"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

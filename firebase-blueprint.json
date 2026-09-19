@@ -1,0 +1,115 @@
+{
+  "collections": [
+    {
+      "name": "users",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string" },
+          "displayName": { "type": "string" },
+          "photoURL": { "type": ["string", "null"] },
+          "xp": { "type": "number", "minimum": 0 },
+          "level": { "type": "number", "minimum": 1 },
+          "stats": {
+            "type": "object",
+            "properties": {
+              "gamesPlayed": { "type": "number" },
+              "totalScore": { "type": "number" },
+              "correctAnswers": { "type": "number" }
+            },
+            "required": ["gamesPlayed", "totalScore", "correctAnswers"]
+          },
+          "settings": {
+            "type": "object",
+            "properties": {
+              "darkMode": { "type": "boolean" },
+              "notifications": { "type": "boolean" }
+            }
+          },
+          "badges": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "createdAt": { "type": "timestamp" },
+          "lastActive": { "type": "timestamp" }
+        },
+        "required": ["email", "xp", "level", "stats", "createdAt", "lastActive"]
+      },
+      "rules": [
+        {
+          "allow": ["read"],
+          "condition": "request.auth != null"
+        },
+        {
+          "allow": ["create", "update"],
+          "condition": "request.auth != null && request.auth.uid == documentId"
+        }
+      ]
+    },
+    {
+      "name": "games",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "enum": ["single", "multiplayer"] },
+          "status": { "type": "string", "enum": ["waiting", "active", "completed"] },
+          "playerIds": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "players": {
+            "type": "map",
+            "values": {
+              "type": "object",
+              "properties": {
+                "score": { "type": "number" },
+                "completed": { "type": "boolean" }
+              }
+            }
+          },
+          "createdAt": { "type": "timestamp" },
+          "createdBy": { "type": "string" }
+        },
+        "required": ["type", "status", "playerIds", "createdAt", "createdBy"]
+      },
+      "rules": [
+        {
+          "allow": ["read"],
+          "condition": "request.auth != null && request.auth.uid in resource.data.playerIds"
+        },
+        {
+          "allow": ["create"],
+          "condition": "request.auth != null && request.auth.uid == request.resource.data.createdBy"
+        },
+        {
+          "allow": ["update"],
+          "condition": "request.auth != null && request.auth.uid in resource.data.playerIds"
+        }
+      ]
+    },
+    {
+      "name": "leaderboard",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "userId": { "type": "string" },
+          "displayName": { "type": "string" },
+          "xp": { "type": "number" },
+          "level": { "type": "number" },
+          "updatedAt": { "type": "timestamp" }
+        },
+        "required": ["userId", "displayName", "xp", "level", "updatedAt"]
+      },
+      "rules": [
+        {
+          "allow": ["read"],
+          "condition": "request.auth != null"
+        },
+        {
+          "allow": ["write"],
+          "condition": "request.auth != null && request.auth.uid == request.resource.data.userId"
+        }
+      ]
+    }
+  ]
+}
