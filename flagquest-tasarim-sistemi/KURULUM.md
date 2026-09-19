@@ -17,9 +17,10 @@ Marka kitabı `README.md` dosyasındadır; kullanım kurallarının tamamı orad
 | `components/<Ad>/README.md` | Bileşenin kullanım kılavuzu: ne zaman kullanılır, tüketicinin ne sağladığı, yapılmayacaklar. |
 | `components/<Ad>/preview.html` | Bileşenin canlı önizlemesi (bağımsız belge). |
 | `components/Cover/preview.html` | Sistemin kapağı. |
-| `assets/Logo/` | 12 SVG logo varlığı + mürekkep ve kullanım kuralları. |
-| `onizleme/` | Render edilmiş PNG kontrol sayfaları — iki temada bileşenler, kapak, logo ailesi ve boyut testi. |
-| `design-system.json` | Sistem dizini (başlık, kütüphaneler, varlık grupları). Yalnızca tasarım sistemi artifact'ine geri yüklerken gerekir. |
+| `assets/Logo/` | **Yürürlükteki logo ailesi** — Logo Kiti 2.0, Fly yönü: 12 SVG, 31 PNG, `favicon.ico`. Mürekkep, boyut ve kullanım kuralları `assets/Logo/README.md` dosyasındadır. |
+| `assets/logo-adaylari/` | Logo Kiti 2.0'ın seçilmeyen iki amblem yönü (Damga, Kanton) ve yön seçiminin karar kaydı. Uygulama ve tasarım sistemi bunları kullanmaz. |
+| `onizleme/` | Render edilmiş PNG kontrol sayfaları — iki temada bileşenler, kapak, logo ailesi, boyut testi ve üç amblem yönünün karşılaştırması. |
+| `design-system.json` | Sistem dizini (başlık, kütüphaneler, varlık grupları). Yalnızca tasarım sistemi artifact'ine geri yüklerken gerekir. Emekli 1.0 logo ailesinin kaydı **kaldırılmıştır**: `blob` kimlikleri artifact deposunu gösterdiği için bırakılsaydı bir geri yükleme eski logoları geri getirirdi. Yeni aile, sistem artifact'e yeniden dışa aktarıldığında buraya kendiliğinden yazılır. |
 
 ## Yazı tipleri
 

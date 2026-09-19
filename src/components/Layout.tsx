@@ -4,7 +4,8 @@ import { Home, Moon, Play, Stamp, Sun, Trophy, User, Volume2, VolumeX } from 'lu
 import { AltNavigasyon, type NavOgesi } from './ds';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useAuthStore } from '../store/useAuthStore';
-import { logoYolu, useTema } from '../lib/tema';
+import { useTema } from '../lib/tema';
+import { logoYolu } from '../lib/logo';
 
 /** Beş hedef sabittir ve sırası değişmez; orta öge yükseltilmiş "Oyna" düğmesidir. */
 const OGELER: NavOgesi[] = [
@@ -30,12 +31,14 @@ export function Layout() {
   return (
     <div className="flex h-screen flex-col bg-zemin">
       <header className="flex items-center justify-between px-4 py-3">
+        {/* Yatay kilit 403,7 x 120 oranındadır ve en az 160 px genişlikte kullanılır;
+            h-12 bu eşiği geçen ~162 px genişlik verir. */}
         <img
           src={logoYolu(tema, 'yatay')}
           alt="FlagQuest"
-          width={180}
-          height={43}
-          className="h-[38px] w-auto"
+          width={162}
+          height={48}
+          className="h-12 w-auto"
         />
 
         <div className="flex items-center gap-1">
