@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Country, countries } from '../data/countries';
+import { KITALAR, ulkeKitasi, type Kita } from '../lib/kitalar';
 import { playStampSound } from '../lib/audio';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -20,7 +21,7 @@ interface PassportState {
   unlockCountry: (country: Country) => boolean;
   isUnlocked: (code: string) => boolean;
   getTotalUnlocked: () => number;
-  getContinentStats: () => Record<string, { unlocked: number; total: number }>;
+  getContinentStats: () => Record<Kita, { unlocked: number; total: number }>;
 }
 
 export const usePassportStore = create<PassportState>()(
@@ -80,20 +81,16 @@ export const usePassportStore = create<PassportState>()(
 
       getContinentStats: () => {
         const { stamps } = get();
-        const stats: Record<string, { unlocked: number; total: number }> = {
-          'Avrupa': { unlocked: 0, total: 0 },
-          'Asya': { unlocked: 0, total: 0 },
-          'Afrika': { unlocked: 0, total: 0 },
-          'Amerika': { unlocked: 0, total: 0 },
-          'Okyanusya': { unlocked: 0, total: 0 },
-        };
+        const stats = Object.fromEntries(
+          KITALAR.map(k => [k, { unlocked: 0, total: 0 }])
+        ) as Record<Kita, { unlocked: number; total: number }>;
 
         countries.forEach(c => {
-          if (stats[c.region]) {
-            stats[c.region].total += 1;
-            if (stamps[c.code]) {
-              stats[c.region].unlocked += 1;
-            }
+          const kita = ulkeKitasi(c.region);
+          if (!kita) return;
+          stats[kita].total += 1;
+          if (stamps[c.code]) {
+            stats[kita].unlocked += 1;
           }
         });
 

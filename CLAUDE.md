@@ -1,7 +1,8 @@
 # CLAUDE.md
 
 Bu dosya, bu depoda çalışan Claude Code örnekleri için yönlendirmedir. Kod tabanı ve
-arayüzün tamamı Türkçedir; kod içi yorumlar İngilizce yazılmıştır. Bu ayrımı koru.
+arayüzün tamamı Türkçedir; kod içi yorumlar hem Türkçe hem İngilizce bulunur — yeni
+yazarken çevredeki dosyanın diline uy.
 
 ## Proje ne
 
@@ -10,7 +11,7 @@ mobil öncelikli bir PWA'dır. Tek sayfa uygulaması (SPA); sunucu tarafı kod y
 kalıcı veri Firebase (Auth + Firestore) ve tarayıcı `localStorage` üzerinde tutulur.
 
 Yığın: React 19 · Vite 6 · Tailwind CSS v4 (`@tailwindcss/vite`) · Zustand 5 ·
-Firebase 12 · react-router-dom 7 · framer-motion · lucide-react · vite-plugin-pwa.
+Firebase 12 · react-router-dom 7 · lucide-react · vite-plugin-pwa.
 
 Proje Google AI Studio applet şablonundan üretilmiştir; `package.json` içindeki
 `"name": "react-example"` ve `index.html`'deki HMR/service-worker hata yutucu betik
@@ -25,15 +26,12 @@ npm run lint         # tsc --noEmit — depodaki TEK otomatik kontrol, temiz ge�
 npm run build        # vite build → dist/ (+ sw.js, manifest.webmanifest)
 npm run preview      # üretim çıktısını yerelde servis eder
 npm run clean        # rm -rf dist server.js
-node scripts/generate-icons.mjs   # public/ altındaki PWA ikonlarını ve favicon'u yeniden üretir
+node scripts/generate-icons.mjs   # PWA ikonlarını resmî logo SVG'lerinden yeniden üretir
 ```
 
-Doğrulanmış durum (19.09.2026): `npm run lint` hatasız geçer, `npm run build` başarılı
-(ana paket ~1,3 MB, tek yığın — 500 kB uyarısı beklenen davranıştır, kod bölme yapılmamıştır).
-
 Test altyapısı, ESLint ve Prettier **yoktur**. Değişiklikten sonra en azından
-`npm run lint` ve `npm run build` çalıştır. Test yazman istenirse önce altyapı kurulması
-gerektiğini belirt.
+`npm run lint` ve `npm run build` çalıştır. Test yazman istenirse önce altyapı
+kurulması gerektiğini belirt.
 
 `npm run deploy` gerçek bir dağıtım yapmaz; AI Studio arayüzüne yönlendiren bir mesaj
 basar. Gerçek dağıtım Firebase Hosting üzerinden `dist/` klasöründendir (`firebase.json`,
@@ -42,19 +40,88 @@ proje `gen-lang-client-0521782135`).
 `DISABLE_HMR=true` ortam değişkeni HMR'ı ve dosya izlemeyi kapatır (ajan düzenlemeleri
 sırasında titremeyi önlemek için). `vite.config.ts` içindeki bu bloğa dokunma.
 
+## Tasarım sistemi — ÖNCE BUNU OKU
+
+Uygulamanın görsel dili `flagquest-tasarim-sistemi/` altındaki tasarım sisteminden
+gelir ve **uygulamaya tam olarak bağlanmıştır**. Marka kitabı
+`flagquest-tasarim-sistemi/README.md` dosyasıdır; görsel bir değişiklik yapmadan önce
+oradaki kuralları oku. Sistemin metaforu tektir: *oyuncu bir dünya pasaportu taşır,
+doğru bildiği her ülke o pasaporta damga olarak mühürlenir.*
+
+### Nasıl bağlı
+
+| Uygulamadaki dosya | Kaynağı | Ne yapar |
+| --- | --- | --- |
+| `src/tokens.css` | `flagquest-tasarim-sistemi/tokens.css` | Renk, tipografi, boşluk token'ları ve tip stili sınıfları |
+| `src/ds.css` | `flagquest-tasarim-sistemi/components/bundle.css` | Bileşen stil tabakası (`fq-btn`, `fq-mod`, `fq-sik` …) |
+| `src/index.css` | — | İkisini içe aktarır ve `@theme inline` ile Tailwind'e bağlar |
+| `src/components/ds/` | `flagquest-tasarim-sistemi/components/index.d.ts` | 10 bileşenin React karşılığı |
+| `public/logo/` | `flagquest-tasarim-sistemi/assets/Logo/` | Yatay, dikey ve amblem logo dosyaları |
+
+`src/tokens.css` ve `src/ds.css` **türetilmiş dosyalardır**: elle düzenlenmez. Sistem
+güncellenirse `flagquest-tasarim-sistemi/` içinden yeniden kopyalanır.
+
+`src/components/ds/` altındaki bileşenler `bundle.js`'in React'e taşınmış hâlidir; DOM
+yapısı ve sınıf adları `bundle.css` ile birebir aynıdır, prop sözleşmesi `index.d.ts`
+ile aynıdır. Yeni bir prop eklemeden önce bileşenin kendi
+`flagquest-tasarim-sistemi/components/<Ad>/README.md` dosyasını oku — orada "yapma"
+listesi vardır.
+
+### Bozulmaması gereken kurallar
+
+Bunlar marka kitabının "Kurallar" bölümüdür ve kod incelemesinde aranır:
+
+- **Ham Tailwind paleti kullanılmaz.** `slate-*`, `indigo-*`, `purple-*`, `emerald-*`,
+  `rose-*` ve benzerleri kaldırılmıştır. Renk yalnızca token adlarıyla gelir:
+  `bg-zemin`, `bg-zemin-yukseltilmis`, `text-metin`, `text-metin-yumusak`,
+  `border-cizgi`, `text-altin`, `text-damga`, `text-vize` …
+- **Tema `dark:` varyantıyla değil `data-theme` ile çözülür.** `<html data-theme="gece">`
+  varsayılandır, `kagit` ikinci temadır; token'lar temayı kendileri çözer, bu yüzden
+  bileşen CSS'inde tema koşulu bulunmaz. Tema tercihi `user.settings.darkMode`
+  alanında saklanır (Firestore şeması korunsun diye alan adı değiştirilmedi) ve
+  `src/lib/tema.ts` bunu `gece`/`kagit`'e çevirir. `index.html`'deki küçük betik ilk
+  boyamadan önce temayı `localStorage`'dan okur.
+- **Arayüzde emoji kullanılmaz.** Rozet, mod ve görev ikonları `lucide-react`
+  düğümleridir. Bu yüzden `lib/badges.ts` ikon bileşeni taşır ve `useQuestStore`
+  görev nesnesinde ikon tutmaz — eşleme `DailyQuestsModal` içindedir.
+- **Bir ekranda tek `birincil` buton bulunur.** Diğer eylemler `ikincil` veya
+  `hayalet`tir; `tehlike` yalnızca geri alınamayan işlemler içindir ve onaysız
+  kullanılmaz (bkz. `MistakeVault`'taki iki adımlı boşaltma).
+- **Durum bildirimi hiçbir zaman yalnız renkle yapılmaz.** Doğru `vize`, yanlış
+  `damga`; ikisi de ikon **ve** sözcük taşır. `SikButonu` bunu kendisi yapar.
+- **Mod rengi durum bildiriminde, durum rengi mod kimliğinde kullanılmaz.** Mod →
+  renk/ikon eşlemesinin tek kaynağı `src/lib/modlar.ts`'tir.
+- **Bayrak görseli hiçbir efektle değiştirilmez** (yalnız Dedektif modunun
+  `bulanik1`/`bulanik2` kademeleri istisnadır ve her kademe ekranda sözcükle de
+  belirtilir). Soru sorulurken `BayrakKarti`'nın `alt` metni **boş bırakılır**, yoksa
+  cevap ekran okuyucuya sızar.
+- **Odak halkası kaldırılmaz** (`:focus-visible`, `src/index.css` temel katmanında).
+- **Logo yeniden çizilmez veya yeniden düzenlenmez.** `scripts/generate-icons.mjs` bu
+  yüzden ikonları elle çizmek yerine resmî SVG'leri başsız Chromium ile
+  rasterleştirir; Chromium yoksa `CHROME_PATH` ile verilir.
+- **Sayılar Türkçe biçimdedir** (ondalık virgül, binlik nokta, `42 sn`). Biçimlendirme
+  `src/lib/bicim.ts` üzerinden yapılır: `sayi`, `yuzde`, `sure`, `sureMs`, `ulkeKodu`.
+  Ülke kodu arayüzde daima BÜYÜK HARF gösterilir.
+- **Hareketin üç kalıbı vardır, dördüncüsü yoktur:** basılma (`:active`, bileşen
+  CSS'inde), açılma (`.acilma` sınıfı, `src/index.css`), ilerleme (`width`, 500 ms).
+  `prefers-reduced-motion` altında süreler sıfırlanır. Animasyon kütüphanesi
+  kullanılmaz — `framer-motion` artık hiçbir yerden import edilmiyor.
+
 ## Mimari
 
 ```
 src/
   main.tsx                 giriş; registerSW ile PWA kaydı
-  App.tsx                  BrowserRouter, ProtectedRoute, onAuthStateChanged köprüsü
-  index.css                yalnızca @import "tailwindcss"
-  data/countries.ts        195 ülke (kod, ad, başkent, kıta, funFact) + getFlagUrl()
+  App.tsx                  BrowserRouter, ProtectedRoute, tema ve auth köprüsü
+  index.css                tailwind + tokens.css + ds.css + @theme eşlemesi
+  tokens.css / ds.css      tasarım sisteminden kopyalanır, elle düzenlenmez
+  components/ds/           tasarım sistemi bileşenleri (10 adet + tipler)
+  components/              uygulamaya özel paylaşılan bileşenler
+  data/countries.ts        195 ülke (kod, ad, başkent, bölge, funFact) + getFlagUrl()
+  lib/                     firebase, audio, tema, bicim, kitalar, modlar, badges, utils
+  pages/                   rota bileşenleri
   services/                countries.ts üzerine salt-okunur sorgu katmanı
   store/                   Zustand mağazaları — iş kurallarının tamamı burada
-  pages/                   rota bileşenleri
-  components/              paylaşılan bileşenler
-  lib/                     firebase, audio, badges, utils (cn), firestoreError
 ```
 
 **Kural: oyun mantığı mağazalarda, görsel mantık sayfalarda.** Puanlama, seri/çarpan,
@@ -63,7 +130,8 @@ joker, damga ve görev ilerlemesi `src/store/` altındadır; sayfalar mağaza ey
 
 Rotalar: `/login` (korumasız), `/` altında `Layout` içinde `index`, `game`, `passport`,
 `mistakes`, `multiplayer`, `countries`, `leaderboard`, `profile`. `ProtectedRoute`
-yalnızca `useAuthStore.user` varlığına bakar.
+yalnızca `useAuthStore.user` varlığına bakar. Alt navigasyonun beş hedefi sabittir ve
+oyun ekranında (`/game`) gizlenir.
 
 ### Mağazalar ve kalıcılık
 
@@ -84,18 +152,30 @@ Mağazalar birbirini doğrudan `getState()` ile çağırır (`useGameStore.answe
 içinden passport, mistake, quest ve badge mağazaları). Bu kasıtlıdır; React hook'u
 olmayan yerlerden çağrılabilmesi için gereklidir.
 
-### Oyun modları (`useGameStore`)
+### Kıtalar
 
-| Mod | Soru | Taban puan | Özellik |
-| --- | --- | --- | --- |
-| `classic` | 10 | 10 | Temel akış |
-| `time_attack` | 30 havuz | 15 | 60 sn; doğru +3 sn, yanlış −2 sn, tavan 99 sn |
-| `reverse` | 10 | 10 | Ülke adı verilir, bayrak seçilir |
-| `detective` | 8 | ipucu kademesine göre 30 / 20 / 10 | Bayrak kademeli netleşir |
-| `world_tour` | 6 | 10 | Kıtaya göre filtreli |
-| `mistake_vault` | ≤10 | 10 | Hata Kumbarası pratiği; doğru bilinen kumbaradan silinir |
-| `daily` | 5 | 10 | Tarihe göre tohumlanmış 20'lik havuzdan |
+`data/countries.ts` ham bölge alanında altı değer kullanır: `Avrupa`, `Asya`, `Afrika`,
+`Kuzey Amerika`, `Güney Amerika`, `Okyanusya` ve bir kez `Avrupa/Asya` (Türkiye).
+Arayüz ise beş kıta konuşur. Eşleme **yalnızca** `src/lib/kitalar.ts` içindedir:
+Dünya Turu havuzu, pasaport kıta istatistikleri ve ansiklopedi filtresi hepsi bunu
+kullanır. Her ülke tek bir kıtaya sayılır, toplamlar 195'e tamamlanır; Türkiye
+Avrupa'ya sayılır ama ülke kartında ham bölge metni (`Avrupa/Asya`) gösterilir.
+Bölgeye göre filtreleme yazarken düz metin karşılaştırması yapma, `ulkeKitasi()` veya
+`kitaUlkeleri()` kullan.
 
+### Oyun modları (`useGameStore` + `src/lib/modlar.ts`)
+
+| Mod | Renk | Soru | Taban puan | Özellik |
+| --- | --- | --- | --- | --- |
+| `classic` | altin | 10 | 10 | Temel akış |
+| `time_attack` | meridyen | 30 havuz | 15 | 60 sn; doğru +3 sn, yanlış −2 sn, tavan 99 sn |
+| `reverse` | vize | 10 | 10 | Ülke adı verilir, bayrak seçilir |
+| `detective` | erguvan | 8 | 30 / 20 / 10 | Bayrak kademeli netleşir |
+| `world_tour` | bozkir | 6 | 10 | Kıtaya göre filtreli |
+| `mistake_vault` | altin | ≤10 | 10 | Doğru bilinen kumbaradan silinir |
+| `daily` | altin | 5 | 10 | Tarihe göre tohumlanmış 20'lik havuzdan |
+
+Ana sayfada ayrıca iki yüzey vardır: `duello` (damga) ve `ansiklopedi` (meridyen).
 Seri çarpanı: 3+ → 1,5× · 5+ → 2,0× · 8+ → 3,0×. Puan `Math.round(taban × çarpan)`.
 
 ### Çok oyunculu (`useMultiplayerStore` + `pages/Multiplayer.tsx`)
@@ -131,71 +211,51 @@ uygulama çevrimdışı ve misafir kipinde çalışmaya devam eder. Bu bilinçli
 
 ### Misafir kipi
 
-`Login` sayfasındaki "Misafir Olarak Giriş Yap", `uid` değeri `guest_` ile başlayan bir
+`Login` sayfasındaki "Misafir olarak gir", `uid` değeri `guest_` ile başlayan bir
 yerel profil üretir. Firebase Auth oturumu **yoktur**. Kod her bulut yazmasından önce
-`auth.currentUser && !user.uid.startsWith('guest_')` kontrolü yapar. Yeni bulut
+`auth.currentUser && !user.uid.startsWith('guest_')` kontrolü yapar. Yeni bir bulut
 senkronizasyonu eklerken bu iki koşulu birlikte kontrol et.
 
 Sonuç olarak misafirler liderlik tablosuna yazamaz ve çok oyunculu odalara pratikte
-katılamaz (kurallar `request.auth != null` ister). Bu davranış bilinçlidir ama kullanıcıya
-bildirilmez — bu alana dokunuyorsan davranışı doğrula.
+katılamaz (kurallar `request.auth != null` ister). Bu artık arayüzde de yazılıdır
+(Liderlik ve Düello ekranlarındaki not satırları).
 
-## Yazım ve biçim kuralları
+## Dış bağımlılıklar ve yerel geliştirme
 
-- **Arayüz metni Türkçedir, i18n katmanı yoktur.** Dizgeleri JSX içine doğrudan yaz;
-  yeni bir çeviri altyapısı kurma. Oyuncuya "sen" diye hitap edilir.
-- Tailwind sınıfları satır içi yazılır. Koşullu sınıf birleştirme için daima
-  `cn()` (`src/lib/utils.ts`) kullan.
-- İkonlar `lucide-react`'tendir. Animasyon `framer-motion`'dandır — `motion` paketi
-  `package.json`'da olsa da hiçbir yerden import edilmez, ondan import etme.
 - Bayrak görselleri `getFlagUrl(code)` ile `flagcdn.com/w320/{kod}.png` adresinden
-  gelir ve Workbox `CacheFirst` ile 30 gün önbelleklenir (`vite.config.ts`).
+  gelir ve Workbox `CacheFirst` ile 30 gün önbelleklenir (`vite.config.ts`). Ağ erişimi
+  kısıtlı bir ortamda (ör. ajan sandbox'ı) bayraklar yüklenmez ve `alt` metni görünür;
+  bu bir kod hatası değildir.
+- Yazı tipleri Google Fonts'tan gelir (`index.html`): Bricolage Grotesque (başlık),
+  Figtree (gövde), IBM Plex Mono (belge). Pakette font dosyası taşınmaz.
 - Ses, dosya değil Web Audio API osilatörüdür (`src/lib/audio.ts`); her çağrı
   `useSettingsStore.soundEnabled` kontrol eder.
-- Karanlık tema varsayılandır: `index.html` kök öğesine `class="dark"` verir, `App.tsx`
-  bunu `user.settings.darkMode` ile eşler. Her bileşen `dark:` varyantı taşımalıdır.
-- `@/*` yol takma adı depo köküne çözümlenir (`tsconfig.json`, `vite.config.ts`), ancak
-  mevcut kod göreli import kullanır. Yeni dosyada çevredeki desene uy.
 
 ## Bilinen tuzaklar
 
-Bunlar mevcut koddaki gerçek tutarsızlıklardır. İlgili alana dokunmadan düzeltme
-yapma, ama dokunuyorsan farkında ol.
-
-1. **Kıta adları üç farklı sözlükte tutarsızdır.** `data/countries.ts` `Kuzey Amerika`,
-   `Güney Amerika` ve bir kez `Avrupa/Asya` kullanır; buna karşılık `Home.tsx` (Dünya
-   Turu), `Passport.tsx` (filtre) ve `usePassportStore.getContinentStats()` tek bir
-   `Amerika` bekler. Sonuçları: Dünya Turu'nda "Amerika" seçilince
-   `startWorldTour('Amerika')` boş havuz üretir, `generateQuestionSet` sessizce tüm 195
-   ülkeye düşer; pasaport kıta istatistiklerinde Amerika daima 0/0 görünür.
-   `Countries.tsx` doğru adları kullanan tek yerdir.
-2. **Tasarım sistemi uygulamaya bağlı değildir.** `flagquest-tasarim-sistemi/` altında
-   tam bir marka kitabı, token seti (`tokens.css`, `tokens.json`) ve 10 bileşenlik bir
-   paket vardır; "pasaport" metaforu, altın/damga renk rolleri ve **arayüzde emoji
-   kullanılmaması** kuralını getirir. Uygulama ise `src/index.css` içinde yalnızca
-   `@import "tailwindcss"` yapar, indigo/mor gradyanlar ve emoji kullanır (rozet ve
-   görev ikonları). Görsel iş isteniyorsa önce hangi sistemin geçerli olduğunu netleştir;
-   bağlama yönergesi `flagquest-tasarim-sistemi/KURULUM.md` dosyasındadır.
-3. **Günün Meydan Okuması tam deterministik değildir.** `getDailyQuestions()` tarihten
+1. **Günün Soruları tam deterministik değildir.** `getDailyQuestions()` tarihten
    türetilmiş bir sıralamayla 20'lik havuz kurar, ama sonra `generateQuestionSet` bu
    havuzdan 5 soruyu rastgele seçer. Aynı gün tekrar oynayan oyuncu farklı sorular görür.
-4. **Karıştırma `sort(() => 0.5 - Math.random())` ile yapılır** (`useGameStore`,
+2. **Karıştırma `sort(() => 0.5 - Math.random())` ile yapılır** (`useGameStore`,
    `useMultiplayerStore`). İstatistiksel olarak yanlıdır; karıştırmaya dokunuyorsan
    Fisher–Yates'e geçir.
-5. **Kullanılmayan bağımlılıklar:** `@google/genai`, `express`, `dotenv`, `date-fns`,
-   `motion` (ve `@types/express`, `tsx`, `esbuild`). `metadata.json` hâlâ
-   `MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API` ilan eder ama kodda hiçbir Gemini çağrısı
-   yoktur. Silmeden önce AI Studio dağıtımını bozup bozmadığını sor.
-6. **`testFirestoreConnection()`** dışa aktarılmış ama hiçbir yerden çağrılmıyor.
-7. **İki kilit dosyası birlikte tutuluyor:** `bun.lock` ve `package-lock.json`. Bağımlılık
+3. **Kullanılmayan bağımlılıklar:** `@google/genai`, `express`, `dotenv`, `date-fns`,
+   `motion` ve artık `framer-motion` (ve `@types/express`, `tsx`, `esbuild`).
+   `metadata.json` hâlâ `MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API` ilan eder ama kodda
+   hiçbir Gemini çağrısı yoktur. Silmeden önce AI Studio dağıtımını bozup bozmadığını sor.
+4. **`testFirestoreConnection()`** dışa aktarılmış ama hiçbir yerden çağrılmıyor.
+5. **İki kilit dosyası birlikte tutuluyor:** `bun.lock` ve `package-lock.json`. Bağımlılık
    eklerken hangisiyle çalıştığını söyle; ikisini birden güncellemek istemiyorsan
    diğerini kirletme.
-8. `useGameStore.useHint()` `hintStage >= 2` ile sınırlıdır, oysa tip yorumu 0–3 aralığı
+6. `useGameStore.useHint()` `hintStage >= 2` ile sınırlıdır, oysa tip yorumu 0–3 aralığı
    tanımlar; üçüncü ipucu kademesi erişilemez durumdadır.
-9. **`firebase-applet-config.json` depoda açıkta durur.** Firebase web istemci
+7. **`firebase-applet-config.json` depoda açıkta durur.** Firebase web istemci
    yapılandırması gizli değildir (güvenlik kurallarla sağlanır), ama buraya yeni bir
    gerçek sır ekleme — sırlar `.env` üzerinden gelir ve `.gitignore` `.env*` dosyalarını
    hariç tutar.
+8. **Damga mühürlenme darbesi uygulanmamıştır.** `Damga` bileşeninin README'si yeni
+   kazanılan damga için 0,3 sn'lik bir ölçek darbesi ister; bunun için "hangi damga az
+   önce kazanıldı" bilgisinin pasaport mağazasından arayüze taşınması gerekir.
 
 ## Dal ve katkı akışı
 

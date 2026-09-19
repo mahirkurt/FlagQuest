@@ -317,15 +317,15 @@ export const useMultiplayerStore = create<MultiplayerState>((set, get) => ({
             case 'steal':
               updates[`players.${uid}.score`] = increment(20); // 15 base + 20 stolen
               updates[`players.${targetId}.score`] = increment(-20);
-              eventText = `🥷 KAOOS! ${myName}, ${targetName}'den 20 puan çaldı!`;
+              eventText = `${myName}, ${targetName} oyuncusundan 20 puan aldı.`;
               break;
             case 'boost':
               updates[`players.${uid}.score`] = increment(35); // 15 base + 35 boost
-              eventText = `🚀 ŞANS! ${myName} gizli hazineyi buldu! (+35 Puan)`;
+              eventText = `${myName} gizli hazineyi buldu: +35 puan.`;
               break;
             case 'tax':
               updates[`players.${uid}.score`] = increment(5); // 15 base - 10 tax
-              eventText = `📉 GÜMRÜK! ${myName} yanlış vize ile yakalandı! (-10 Puan)`;
+              eventText = `${myName} gümrüğe takıldı: −10 puan.`;
               break;
           }
 

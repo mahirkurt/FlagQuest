@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="tr" data-theme="gece">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -9,10 +9,32 @@
     <meta property="og:description" content="195 BM üyesi ülkeyi kapsayan bayrak ve coğrafya oyunu. Pasaport damga koleksiyonu, akıllı hata kumbarası ve zengin oyun modları." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="theme-color" content="#0f172a" />
+    <meta name="theme-color" content="#0a1524" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+
+    <!-- Marka yazı tipleri: Bricolage Grotesque (başlık), Figtree (gövde), IBM Plex Mono (belge). -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Figtree:wght@400..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" />
+
+    <script>
+      // Tema, uygulama açılmadan önce yerel tercihten okunur; böylece ilk boyamada
+      // yanlış tema görünmez. Kaynak: zustand'ın flagquest-auth-storage kaydı.
+      (function () {
+        try {
+          var ham = localStorage.getItem('flagquest-auth-storage');
+          if (ham) {
+            var koyu = JSON.parse(ham)?.state?.user?.settings?.darkMode;
+            if (koyu === false) document.documentElement.setAttribute('data-theme', 'kagit');
+          }
+        } catch (e) {
+          // Tercih okunamazsa gece teması (varsayılan) kalır.
+        }
+      })();
+    </script>
+
     <script>
       // Filter benign Vite development HMR/WebSocket errors caused by DISABLE_HMR in container sandbox
       window.addEventListener('error', function(e) {
@@ -58,9 +80,8 @@
       }
     </script>
   </head>
-  <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50 antialiased overflow-hidden">
+  <body class="overflow-hidden">
     <div id="root" class="h-screen w-screen overflow-hidden"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

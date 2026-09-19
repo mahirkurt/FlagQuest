@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './lib/firebase';
 import { useAuthStore, syncUserFromFirestore } from './store/useAuthStore';
+import { temaUygula } from './lib/tema';
 import { Layout } from './components/Layout';
 import { Login } from './pages/Login';
 import { Home } from './pages/Home';
@@ -26,11 +27,7 @@ export default function App() {
   const darkMode = useAuthStore(state => state.user?.settings.darkMode ?? true);
 
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    temaUygula(darkMode ? 'gece' : 'kagit');
   }, [darkMode]);
 
   useEffect(() => {

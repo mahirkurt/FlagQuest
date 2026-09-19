@@ -6,7 +6,6 @@ export interface DailyQuest {
   id: string;
   title: string;
   description: string;
-  icon: string;
   target: number;
   current: number;
   xpReward: number;
@@ -24,12 +23,14 @@ interface QuestState {
 
 const getTodayString = () => new Date().toISOString().slice(0, 10);
 
+// Görev ikonu burada tutulmaz: arayüz ikonu görev kimliğinden lucide-react
+// düğümüne eşler (bkz. components/DailyQuestsModal.tsx). Marka kuralı gereği
+// arayüzde emoji kullanılmaz ve kalıcı durum görsel veri taşımaz.
 const generateDailyQuests = (): DailyQuest[] => [
   {
     id: 'play_game',
-    title: 'Günün Kaşifi',
-    description: 'Herhangi bir oyun modunda 1 tur tamamla.',
-    icon: '🎮',
+    title: 'Günün Kâşifi',
+    description: 'Herhangi bir oyun modunda bir tur tamamla.',
     target: 1,
     current: 0,
     xpReward: 30,
@@ -39,8 +40,7 @@ const generateDailyQuests = (): DailyQuest[] => [
   {
     id: 'streak_3',
     title: 'Ateşli Seri',
-    description: 'En az 3 soruluk kesintisiz doğru cevap serisi yakala.',
-    icon: '⚡',
+    description: 'Art arda üç doğru cevaplık bir seri yakala.',
     target: 3,
     current: 0,
     xpReward: 40,
@@ -50,8 +50,7 @@ const generateDailyQuests = (): DailyQuest[] => [
   {
     id: 'answer_5',
     title: 'Bayrak Ustası',
-    description: 'Bugün toplam 5 bayrağı doğru tahmin et.',
-    icon: '🚩',
+    description: 'Bugün toplam beş bayrağı doğru bil.',
     target: 5,
     current: 0,
     xpReward: 50,

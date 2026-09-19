@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import { AlertTriangle, RotateCcw } from 'lucide-react';
+import { Buton } from './ds';
 
 interface Props {
   children: ReactNode;
@@ -12,13 +13,10 @@ interface State {
   error: Error | null;
 }
 
-export class ErrorBoundary extends React.Component<Props, State> {
+export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = {
-      hasError: false,
-      error: null,
-    };
+    this.state = { hasError: false, error: null };
   }
 
   public static getDerivedStateFromError(error: Error): State {
@@ -31,44 +29,39 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   private handleReset = () => {
     this.setState({ hasError: false, error: null });
-    if (this.props.onReset) {
-      this.props.onReset();
-    }
+    this.props.onReset?.();
   };
 
   public render() {
-    if (this.state.hasError) {
-      return (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center max-w-md mx-auto">
-          <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-2xl flex items-center justify-center mb-4">
-            <AlertTriangle className="w-8 h-8" />
-          </div>
-          <h2 className="text-xl font-bold mb-2 text-slate-800 dark:text-slate-100">
-            {this.props.fallbackTitle || 'Bir şeyler ters gitti'}
-          </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
-            Oyun ekranı yüklenirken geçici bir sorun oluştu. Lütfen tekrar deneyin.
-          </p>
-          <div className="flex gap-3 w-full">
-            <button
-              onClick={this.handleReset}
-              className="flex-1 py-3 px-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-colors text-sm"
-            >
-              <RefreshCw className="w-4 h-4" />
-              Yeniden Dene
-            </button>
-            <a
-              href="/"
-              className="flex-1 py-3 px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors text-sm"
-            >
-              <Home className="w-4 h-4" />
-              Ana Sayfa
-            </a>
-          </div>
-        </div>
-      );
-    }
+    if (!this.state.hasError) return this.props.children;
 
-    return this.props.children;
+    return (
+      <div className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center p-6 text-center">
+        <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-md bg-damga-yumusak text-damga">
+          <AlertTriangle size={26} aria-hidden="true" />
+        </span>
+        <h2 className="baslik-lg text-metin">
+          {this.props.fallbackTitle || 'Ekran yüklenemedi'}
+        </h2>
+        <p className="govde-sm mt-1 text-metin-yumusak">
+          Geçici bir sorun oluştu. Yeniden dene; sorun sürerse ana sayfaya dön.
+        </p>
+
+        <div className="mt-6 flex w-full flex-col gap-2">
+          <Buton
+            cesit="birincil"
+            boyut="lg"
+            tamGenislik
+            ikon={<RotateCcw size={18} />}
+            onClick={this.handleReset}
+          >
+            Yeniden dene
+          </Buton>
+          <Buton cesit="hayalet" boyut="md" tamGenislik onClick={() => { window.location.href = '/'; }}>
+            Ana sayfa
+          </Buton>
+        </div>
+      </div>
+    );
   }
 }

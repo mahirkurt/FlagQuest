@@ -1,122 +1,116 @@
-export interface Badge {
+/**
+ * Başarı rozetleri.
+ *
+ * Rozet kimlikleri Firestore'daki user.badges dizisinde saklanır; DEĞİŞTİRİLMEZ.
+ * İkonlar lucide-react düğümleridir — marka kuralı gereği arayüzde emoji kullanılmaz.
+ * Kilitli rozetin açıklaması rozetin ne olduğunu değil NASIL kazanılacağını söyler
+ * ve kalan miktarı yazar; bu yüzden metin bir işlevdir.
+ */
+import {
+  Crown,
+  Flame,
+  Gamepad2,
+  Globe,
+  Stamp,
+  Target,
+  Timer,
+  Trophy,
+  Zap,
+  type LucideIcon,
+} from 'lucide-react';
+import { sayi } from './bicim';
+
+/** Kilitli rozet metninin kalan miktarı hesaplayabilmesi için gereken ilerleme. */
+export interface RozetIlerlemesi {
+  oyunlar: number;
+  galibiyetler: number;
+  enYuksekSkor: number;
+  damgalar: number;
+}
+
+export interface RozetTanimi {
   id: string;
-  name: string;
-  description: string;
-  icon: string;
-  color: string;
+  ad: string;
+  /** Kazanılmış rozetin açıklaması: oyuncunun ne yaptığını söyler. */
+  aciklama: string;
+  /** Kilitli rozetin açıklaması: nasıl kazanılacağını ve kalanı söyler. */
+  kilitliAciklama: (ilerleme: RozetIlerlemesi) => string;
+  Ikon: LucideIcon;
 }
 
-export const BADGES: Record<string, Badge> = {
-  'first_win': {
+const kalan = (hedef: number, mevcut: number) => sayi(Math.max(0, hedef - mevcut));
+
+export const ROZETLER: Record<string, RozetTanimi> = {
+  first_win: {
     id: 'first_win',
-    name: 'İlk Zafer',
-    description: 'İlk çok oyunculu maçını kazandın!',
-    icon: '🏆',
-    color: 'from-amber-400 to-orange-500'
+    ad: 'İlk Zafer',
+    aciklama: 'İlk çok oyunculu maçını kazandın.',
+    kilitliAciklama: () => 'Bir canlı düello kazan.',
+    Ikon: Trophy,
   },
-  'veteran': {
+  veteran: {
     id: 'veteran',
-    name: 'Arena Şampiyonu',
-    description: 'Çok oyunculu modda 5 maç kazandın!',
-    icon: '👑',
-    color: 'from-purple-500 to-indigo-500'
+    ad: 'Arena Şampiyonu',
+    aciklama: 'Canlı düelloda beş maç kazandın.',
+    kilitliAciklama: (i) => `Beş düello kazan — ${kalan(5, i.galibiyetler)} kaldı.`,
+    Ikon: Crown,
   },
-  'high_score': {
+  high_score: {
     id: 'high_score',
-    name: 'Skor Canavarı',
-    description: 'Tek maçta 300+ puan elde ettin!',
-    icon: '🔥',
-    color: 'from-red-500 to-rose-600'
+    ad: 'Skor Canavarı',
+    aciklama: 'Tek maçta 300 puanı aştın.',
+    kilitliAciklama: (i) => `Tek maçta 300 puan yap — en iyin ${sayi(i.enYuksekSkor)}.`,
+    Ikon: Flame,
   },
-  'chaos_master': {
+  chaos_master: {
     id: 'chaos_master',
-    name: 'Kaos Ustası',
-    description: 'Toplamda 10 oyun oynadın.',
-    icon: '🌀',
-    color: 'from-emerald-400 to-teal-500'
+    ad: 'Kaos Ustası',
+    aciklama: 'Toplamda on tur tamamladın.',
+    kilitliAciklama: (i) => `On tur tamamla — ${kalan(10, i.oyunlar)} kaldı.`,
+    Ikon: Gamepad2,
   },
-  'streak_master': {
+  streak_master: {
     id: 'streak_master',
-    name: 'Ateşli Kombo',
-    description: 'Tek oyunda art arda 5 doğru cevap bildin!',
-    icon: '⚡',
-    color: 'from-amber-500 to-red-500'
+    ad: 'Ateşli Kombo',
+    aciklama: 'Tek oyunda art arda beş doğru cevap bildin.',
+    kilitliAciklama: () => 'Tek oyunda art arda beş doğru cevap bil.',
+    Ikon: Zap,
   },
-  'blitz_master': {
+  blitz_master: {
     id: 'blitz_master',
-    name: 'Zamanın Efendisi',
-    description: 'Zamana Karşı Blitz modunda 100+ puan aldın!',
-    icon: '⏱️',
-    color: 'from-blue-500 to-cyan-500'
+    ad: 'Zamanın Efendisi',
+    aciklama: 'Zamana Karşı modunda 100 puanı aştın.',
+    kilitliAciklama: () => 'Zamana Karşı modunda 100 puan yap.',
+    Ikon: Timer,
   },
-  'passport_explorer': {
+  passport_explorer: {
     id: 'passport_explorer',
-    name: 'Pasaport Kaşifi',
-    description: 'Pasaportuna 25 farklı ülke damgası ekledin!',
-    icon: '🛂',
-    color: 'from-teal-500 to-emerald-600'
+    ad: 'Pasaport Kâşifi',
+    aciklama: 'Pasaportuna 25 farklı ülke damgası ekledin.',
+    kilitliAciklama: (i) => `25 ülke damgası topla — ${kalan(25, i.damgalar)} kaldı.`,
+    Ikon: Stamp,
   },
-  'vault_cleaner': {
+  vault_cleaner: {
     id: 'vault_cleaner',
-    name: 'Hata Avcısı',
-    description: 'Hata Kumbarası ile yanlışlarını pratik yapıp temizledin!',
-    icon: '🎯',
-    color: 'from-violet-500 to-purple-600'
+    ad: 'Hata Avcısı',
+    aciklama: 'Hata Kumbarası pratiğiyle yanlışlarını temizledin.',
+    kilitliAciklama: () => 'Hata Kumbarası pratiğinde bir turu tamamla.',
+    Ikon: Target,
   },
-  'tour_champion': {
+  tour_champion: {
     id: 'tour_champion',
-    name: 'Dünya Turu Fatihi',
-    description: 'Dünya Turu Seferinde bir kıtayı fethettin!',
-    icon: '🌍',
-    color: 'from-sky-400 to-indigo-600'
-  }
+    ad: 'Dünya Turu Fatihi',
+    aciklama: 'Dünya Turu seferinde bir kıtayı fethettin.',
+    kilitliAciklama: () => 'Bir Dünya Turu seferini tamamla.',
+    Ikon: Globe,
+  },
 };
 
-export interface UserTitle {
-  title: string;
-  color: string;
-  bg: string;
-  border: string;
+/** Seviye unvanları: Çırak Seyyah → Hevesli Gezgin → Usta Kâşif → Baş Kartograf → Dünya Elçisi. */
+export function seviyeUnvani(seviye: number): string {
+  if (seviye >= 15) return 'Dünya Elçisi';
+  if (seviye >= 10) return 'Baş Kartograf';
+  if (seviye >= 6) return 'Usta Kâşif';
+  if (seviye >= 3) return 'Hevesli Gezgin';
+  return 'Çırak Seyyah';
 }
-
-export const getUserTitle = (level: number): UserTitle => {
-  if (level >= 15) {
-    return {
-      title: 'Dünya Elçisi',
-      color: 'text-amber-500 dark:text-amber-400',
-      bg: 'bg-amber-50 dark:bg-amber-950/40',
-      border: 'border-amber-200 dark:border-amber-800'
-    };
-  }
-  if (level >= 10) {
-    return {
-      title: 'Baş Kartograf',
-      color: 'text-purple-500 dark:text-purple-400',
-      bg: 'bg-purple-50 dark:bg-purple-950/40',
-      border: 'border-purple-200 dark:border-purple-800'
-    };
-  }
-  if (level >= 6) {
-    return {
-      title: 'Usta Kaşif',
-      color: 'text-indigo-500 dark:text-indigo-400',
-      bg: 'bg-indigo-50 dark:bg-indigo-950/40',
-      border: 'border-indigo-200 dark:border-indigo-800'
-    };
-  }
-  if (level >= 3) {
-    return {
-      title: 'Hevesli Gezgin',
-      color: 'text-emerald-500 dark:text-emerald-400',
-      bg: 'bg-emerald-50 dark:bg-emerald-950/40',
-      border: 'border-emerald-200 dark:border-emerald-800'
-    };
-  }
-  return {
-    title: 'Çırak Seyyah',
-    color: 'text-sky-500 dark:text-sky-400',
-    bg: 'bg-sky-50 dark:bg-sky-950/40',
-    border: 'border-sky-200 dark:border-sky-800'
-  };
-};
-

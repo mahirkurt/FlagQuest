@@ -1,0 +1,112 @@
+:root, [data-theme="gece"] {
+  --zemin: #0a1524;
+  --zemin-yukseltilmis: #101f33;
+  --zemin-gomuk: #060f1b;
+  --zemin-ters: #f4ecdd;
+  --metin: #f2ece0;
+  --metin-yumusak: #a9b6c6;
+  --metin-silik: #8593a4;
+  --metin-ters: #0c1b2e;
+  --cizgi: #1e3149;
+  --cizgi-belirgin: #5b7799;
+  --gece: #142944;
+  --on-gece: #eadfc8;
+  --odak: #f1616f;
+  --perde: rgba(2, 6, 12, 0.7);
+  --altin-500: #e0b45a;
+  --altin-600: #c9993c;
+  --altin-yumusak: #2b2415;
+  --on-altin: #14202f;
+  --damga-500: #f1616f;
+  --damga-yumusak: #331419;
+  --on-damga: #20080c;
+  --vize-500: #45d3d8;
+  --vize-yumusak: #0a2a2c;
+  --on-vize: #032224;
+  --meridyen-500: #85b6f5;
+  --meridyen-yumusak: #0d203a;
+  --erguvan-500: #d194d2;
+  --erguvan-yumusak: #2a1630;
+  --bozkir-500: #b9c95b;
+  --bozkir-yumusak: #1b2410;
+  --golge-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --golge-md: 0 4px 14px rgba(0, 0, 0, 0.55);
+  --golge-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+  --golge-baski: 0 2px 0 #c9993c;
+}
+[data-theme="kagit"] {
+  --zemin: #f4ecdd;
+  --zemin-yukseltilmis: #fffaf1;
+  --zemin-gomuk: #e8dec9;
+  --zemin-ters: #0c1b2e;
+  --metin: #14202f;
+  --metin-yumusak: #4a5766;
+  --metin-silik: #556270;
+  --metin-ters: #f6f1e6;
+  --cizgi: #ddd0b6;
+  --cizgi-belirgin: #8d7c5c;
+  --gece: #0c1b2e;
+  --on-gece: #f6f1e6;
+  --odak: #8f1a26;
+  --perde: rgba(12, 27, 46, 0.55);
+  --altin-500: #855f0a;
+  --altin-600: #6a4c06;
+  --altin-yumusak: #f8ead0;
+  --on-altin: #fffaf1;
+  --damga-500: #b3212f;
+  --damga-yumusak: #fbdfe0;
+  --on-damga: #fffaf1;
+  --vize-500: #0a6e73;
+  --vize-yumusak: #d2ecec;
+  --on-vize: #fffaf1;
+  --meridyen-500: #1f4f93;
+  --meridyen-yumusak: #dbe6f7;
+  --erguvan-500: #713a72;
+  --erguvan-yumusak: #f0dff0;
+  --bozkir-500: #4f6b1c;
+  --bozkir-yumusak: #e2edcf;
+  --golge-sm: 0 1px 2px rgba(12, 27, 46, 0.08);
+  --golge-md: 0 4px 14px rgba(12, 27, 46, 0.1);
+  --golge-lg: 0 12px 32px rgba(12, 27, 46, 0.14);
+  --golge-baski: 0 2px 0 #6a4c06;
+}
+:root {
+  --bosluk-1: 4px;
+  --bosluk-2: 8px;
+  --bosluk-3: 12px;
+  --bosluk-4: 16px;
+  --bosluk-5: 20px;
+  --bosluk-6: 24px;
+  --bosluk-8: 32px;
+  --bosluk-10: 40px;
+  --bosluk-12: 48px;
+  --bosluk-16: 64px;
+  --yaricap-sm: 8px;
+  --yaricap-md: 12px;
+  --yaricap-lg: 16px;
+  --yaricap-xl: 24px;
+  --yaricap-2xl: 28px;
+  --yaricap-tam: 9999px;
+  --opaklik-pasif: 0.45;
+  --opaklik-kilitli: 0.5;
+  --kenar-ince: 1px;
+  --kenar-kalin: 2px;
+  --kenar-damga: 3px;
+  --font-baslik: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --font-govde: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --font-belge: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
+}
+.gorsel-2xl { font-family: var(--font-baslik); font-size: 44px; line-height: 44px; font-weight: 800; letter-spacing: -0.022em; }
+.gorsel-xl { font-family: var(--font-baslik); font-size: 34px; line-height: 36px; font-weight: 800; letter-spacing: -0.02em; }
+.gorsel-lg { font-family: var(--font-baslik); font-size: 26px; line-height: 30px; font-weight: 700; letter-spacing: -0.015em; }
+.baslik-lg { font-family: var(--font-baslik); font-size: 20px; line-height: 26px; font-weight: 700; letter-spacing: -0.01em; }
+.baslik-md { font-family: var(--font-baslik); font-size: 17px; line-height: 22px; font-weight: 700; letter-spacing: -0.01em; }
+.baslik-sm { font-family: var(--font-baslik); font-size: 15px; line-height: 20px; font-weight: 700; }
+.govde-lg { font-family: var(--font-govde); font-size: 16px; line-height: 24px; font-weight: 400; }
+.govde { font-family: var(--font-govde); font-size: 15px; line-height: 22px; font-weight: 400; }
+.govde-sm { font-family: var(--font-govde); font-size: 13px; line-height: 19px; font-weight: 400; }
+.etiket { font-family: var(--font-govde); font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.01em; }
+.etiket-sm { font-family: var(--font-govde); font-size: 10.5px; line-height: 14px; font-weight: 700; letter-spacing: 0.06em; }
+.belge { font-family: var(--font-belge); font-size: 13px; line-height: 18px; font-weight: 500; letter-spacing: 0.02em; }
+.belge-sm { font-family: var(--font-belge); font-size: 11px; line-height: 15px; font-weight: 500; letter-spacing: 0.04em; }
+.mrz { font-family: var(--font-belge); font-size: 12px; line-height: 16px; font-weight: 400; letter-spacing: 0.14em; }
