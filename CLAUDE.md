@@ -41,6 +41,43 @@ proje `gen-lang-client-0521782135`).
 `DISABLE_HMR=true` ortam değişkeni HMR'ı ve dosya izlemeyi kapatır (ajan düzenlemeleri
 sırasında titremeyi önlemek için). `vite.config.ts` içindeki bu bloğa dokunma.
 
+## Yayın ve güncelleme — iki ayrı hat
+
+Deponun **hiçbir otomasyonu yoktur**: `.github/workflows` yok, dağıtım betiği yok.
+`main`'e itmek tek başına hiçbir yayını tazelemez.
+
+| Hat | Kaynağı | Nasıl tazelenir |
+| --- | --- | --- |
+| AI Studio applet (Cloud Run) | AI Studio projesindeki dosya kopyası (Drive tabanlı), GitHub **değil** | Değişiklik AI Studio projesine alınır, sonra arayüzdeki Share/Deploy |
+| Firebase Hosting | yerel `dist/` | `npm run build` → `firebase deploy --only hosting` |
+
+Yani Claude Code ile yapılan bir değişiklik GitHub'a itildiğinde AI Studio'daki
+applet'i **etkilemez**; applet kendi kopyasından dağıtılır. Yayındaki applet'in eski
+kalmasının birinci nedeni budur.
+
+### Servis çalışanı ve önbellek
+
+Dağıtım doğru yapıldığı hâlde yayındaki sürüm eski görünüyorsa sıradaki şüpheli
+servis çalışanıdır. Üretilen `sw.js` gezinme isteklerini
+`NavigationRoute(createHandlerBoundToURL("index.html"))` ile **ön belleğe alınmış**
+`index.html`'den karşılar; yani dönen ziyaretçi, yeni `sw.js` indirilip devralmadan
+önce eski kabuğu görür. Zinciri ayakta tutan üç parça vardır, üçü de bozulmamalı:
+
+- `vite.config.ts` → `registerType: 'autoUpdate'` + `skipWaiting` + `clientsClaim`.
+- `src/main.tsx` → kayıt saatte bir `registration.update()` ile yoklanır; yoksa uzun
+  süre açık kalan sekme yeni dağıtımı hiç görmez.
+- `index.html` → `controllerchange` olayında sayfa **bir kez** yenilenir
+  (`swYenilendi` bayrağı sonsuz döngüyü engeller).
+
+`firebase.json` bunu sunucu tarafında tamamlar: `index.html`, `sw.js` ve
+`manifest.webmanifest` için `no-cache`, `/assets/**` ve `workbox-*.js` için
+`immutable`. Giriş belgesi veya `sw.js` önbelleklenirse yeni dağıtım eski kabuğun
+arkasında görünmez kalır. Cloud Run tarafında bu başlıkları biz yönetmiyoruz.
+
+Elle kurtarma: tarayıcıda DevTools → Application → Service Workers → Unregister +
+Clear storage. `index.html`'deki hata yakalayıcı bunu bir kez kendiliğinden yapar
+(`pwa_sw_reloaded` oturum bayrağı), ama yalnız yığın yükleme hatası tetiklenirse.
+
 ## Tasarım sistemi — ÖNCE BUNU OKU
 
 Uygulamanın görsel dili `flagquest-tasarim-sistemi/` altındaki tasarım sisteminden

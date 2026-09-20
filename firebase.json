@@ -11,6 +11,40 @@
         "source": "**",
         "destination": "/index.html"
       }
+    ],
+    "headers": [
+      {
+        "//": "Giriş belgesi ve servis çalışanı asla önbellekten servis edilmez; yoksa yeni dağıtım eski kabuğun arkasında görünmez kalır.",
+        "source": "/index.html",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        ]
+      },
+      {
+        "source": "/sw.js",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        ]
+      },
+      {
+        "source": "/manifest.webmanifest",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        ]
+      },
+      {
+        "//": "Parmak izli varlıklar adları değiştiği için süresiz önbelleklenebilir.",
+        "source": "/assets/**",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        ]
+      },
+      {
+        "source": "/workbox-*.js",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        ]
+      }
     ]
   }
 }

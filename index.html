@@ -73,8 +73,14 @@
         }
       }, true);
 
+      // Yeni servis çalışanı devraldığında sayfa bir kez yenilenir; yeni dağıtım
+      // ancak böyle görünür hâle gelir. Bayrak, ilk ziyaretteki devralmada
+      // sonsuz yenileme döngüsü oluşmasını engeller.
       if ('serviceWorker' in navigator) {
+        var swYenilendi = false;
         navigator.serviceWorker.addEventListener('controllerchange', function() {
+          if (swYenilendi) return;
+          swYenilendi = true;
           window.location.reload();
         });
       }
