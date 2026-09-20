@@ -1,0 +1,51 @@
+# FlagQuest — Raspberry Pi / kendi sunucu (Caddy)
+#
+# Caddy'yi öneriyoruz: tek ikili dosya, ARM paketleri resmî, sertifikayı
+# Let's Encrypt'ten kendisi alır ve yeniler. nginx tercih ederseniz aynı
+# kuralların karşılığı `nginx.conf` dosyasındadır.
+#
+# `root`, dagit.sh'ın atomik olarak takas ettiği simgesel bağı gösterir;
+# böylece yarı kopyalanmış bir derleme hiçbir zaman servis edilmez.
+
+# ALANI DEĞİŞTİRİN.
+flagquest.ornek.com {
+	root * /srv/flagquest/guncel
+	encode zstd gzip
+
+	# --- Önbellek kuralları -------------------------------------------------
+	# Parmak izli varlıklar: adları içerikle değiştiği için süresiz.
+	@kalici path /assets/* /workbox-*.js
+	header @kalici Cache-Control "public, max-age=31536000, immutable"
+
+	# Servis çalışanının ön belleğinden tazelenen giriş varlıkları: kısa ömür.
+	@ikonlar path /favicon.svg /favicon.ico /pwa-*.png /apple-touch-icon.png
+	header @ikonlar Cache-Control "public, max-age=3600"
+
+	# Geri kalan HER ŞEY tazedir: index.html, sw.js, surum.json,
+	# manifest.webmanifest ve SPA rotaları (/login, /game, /passport …).
+	# Olumsuzlama ile yazılması kasıtlı: SPA geri dönüşü isteği /index.html'e
+	# yeniden yazdığı için yol eşlemesinin yeniden yazma sırasına bağlı
+	# kalmaması gerekir. Giriş belgesi önbelleğe girerse yeni dağıtım eski
+	# kabuğun arkasında görünmez kalır — projenin bilinen tuzağı budur.
+	@taze not path /assets/* /workbox-*.js /favicon.svg /favicon.ico /pwa-*.png /apple-touch-icon.png
+	header @taze Cache-Control "no-cache, no-store, must-revalidate"
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+
+	# --- SPA geri dönüşü ----------------------------------------------------
+	# Derin bağlantılar (/passport, /leaderboard) diskte dosya değildir.
+	# Bu satır olmadan yenileme 404 verir.
+	try_files {path} /index.html
+	file_server
+
+	log {
+		output file /var/log/caddy/flagquest.log {
+			roll_size 10MiB
+			roll_keep 5
+		}
+	}
+}
