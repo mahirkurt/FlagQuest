@@ -27,6 +27,13 @@
         ]
       },
       {
+        "//": "Sürüm damgası daima ağdan okunmalı; kayma denetimi buna dayanır.",
+        "source": "/surum.json",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        ]
+      },
+      {
         "source": "/manifest.webmanifest",
         "headers": [
           { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }

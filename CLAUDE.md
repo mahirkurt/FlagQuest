@@ -74,6 +74,33 @@ servis çalışanıdır. Üretilen `sw.js` gezinme isteklerini
 `immutable`. Giriş belgesi veya `sw.js` önbelleklenirse yeni dağıtım eski kabuğun
 arkasında görünmez kalır. Cloud Run tarafında bu başlıkları biz yönetmiyoruz.
 
+### Sürüm damgası ve kayma denetimi
+
+Yukarıdaki zincir yalnız servis çalışanının kendini güncellemesine bağlıdır; sunucu
+başlıklarını yönetmediğimiz bir ortamda (AI Studio / Cloud Run) bu yetmez. Bu yüzden
+her derleme kendi kimliğini taşır:
+
+- `vite.config.ts` → `surumBilgisi()` git kısa SHA'sını ve derleme zaman damgasını
+  üretir; `define` ile `__FQ_SURUM__` olarak pakete gömülür ve `surum.json` olarak
+  `dist/` köküne yazılır. **Damga pakete gömüldüğü için her derleme farklı varlık
+  parmak izi üretir** — bu, servis çalışanının da yeni `index.html` görmesini garanti
+  eder.
+- `surum.json` workbox `globIgnores` ile ön belleğe **alınmaz**; yoksa denetim eski
+  değeri okur ve kör kalır.
+- `src/lib/surum.ts` → `surumDenetle()` açılışta `surum.json`'u `cache: 'no-store'`
+  ile okur. Gömülü kimlikle uyuşmuyorsa servis çalışanını kaldırır, bütün ön
+  bellekleri siler, `fetch(href, { cache: 'reload' })` ile HTTP ön bellek girdisini
+  tazeler ve sayfayı bir kez yeniler. `fq_surum_sifirlama` oturum bayrağı sonsuz
+  döngüyü engeller.
+- Damga profil ekranının altında görünür (`surumEtiketi()`); "eski sürüm görüyorum"
+  şikâyetinde ilk bakılacak yer burasıdır. Yayındaki gerçek derleme ise
+  `curl -s <url>/surum.json` ile okunur — ikisi farklıysa tarayıcı eski kabuğu
+  çalıştırıyor, aynıysa dağıtım eski kodu yayınlamış.
+
+Bu zincir başsız Chromium'la iki gerçek derleme arasında sınandı: tarayıcıda A
+derlemesi kuruluyken sunucuya B dağıtıldığında tek yenilemede B'ye geçiyor; sunucu
+`index.html`'i `max-age=3600` ile servis ettiğinde de aynı sonuç alındı.
+
 Elle kurtarma: tarayıcıda DevTools → Application → Service Workers → Unregister +
 Clear storage. `index.html`'deki hata yakalayıcı bunu bir kez kendiliğinden yapar
 (`pwa_sw_reloaded` oturum bayrağı), ama yalnız yığın yükleme hatası tetiklenirse.
@@ -178,7 +205,8 @@ src/
   components/ds/           tasarım sistemi bileşenleri (10 adet + tipler)
   components/              uygulamaya özel paylaşılan bileşenler
   data/countries.ts        195 ülke (kod, ad, başkent, bölge, funFact) + getFlagUrl()
-  lib/                     firebase, audio, tema, logo, bicim, kitalar, modlar, badges, utils
+  lib/                     firebase, audio, tema, logo, bicim, kitalar, modlar, badges,
+                           surum, utils
   pages/                   rota bileşenleri
   services/                countries.ts üzerine salt-okunur sorgu katmanı
   store/                   Zustand mağazaları — iş kurallarının tamamı burada

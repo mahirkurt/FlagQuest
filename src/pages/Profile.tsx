@@ -8,6 +8,7 @@ import { usePassportStore } from '../store/usePassportStore';
 import { useMistakeStore } from '../store/useMistakeStore';
 import { ROZETLER, seviyeUnvani, type RozetIlerlemesi } from '../lib/badges';
 import { sayi, yuzde } from '../lib/bicim';
+import { surumEtiketi } from '../lib/surum';
 import { countries } from '../data/countries';
 import { cn } from '../lib/utils';
 import { Buton, Rozet, SeviyeCubugu } from '../components/ds';
@@ -135,6 +136,10 @@ export function Profile() {
       <Buton cesit="ikincil" boyut="lg" tamGenislik ikon={<LogOut size={18} />} onClick={cikisYap}>
         Çıkış yap
       </Buton>
+
+      {/* Yayındaki kabuğun hangi derlemeden geldiğini buradan okunur; eski sürüm
+          şikâyetlerinde ilk bakılacak yer burasıdır. */}
+      <p className="belge-sm mt-6 text-center text-metin-silik">Derleme {surumEtiketi()}</p>
     </div>
   );
 }

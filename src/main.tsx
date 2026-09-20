@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { registerSW } from 'virtual:pwa-register';
 import App from './App.tsx';
+import { surumDenetle } from './lib/surum';
 import './index.css';
 
 // Servis çalışanı kendini otomatik günceller (registerType: 'autoUpdate').
@@ -24,6 +25,9 @@ const updateSW = registerSW({
     void updateSW(true);
   },
 });
+
+// Servis çalışanı eski kabuğu servis ediyorsa bunu açılışta yakala ve bir kez onar.
+void surumDenetle();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
