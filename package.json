@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
+    "deploy:pi": "bash kendi-sunucu/dagit.sh",
     "deploy": "echo 'To deploy, please use the Share button in the top right corner of the AI Studio interface. Hosting is handled automatically via Cloud Run.'"
   },
   "dependencies": {

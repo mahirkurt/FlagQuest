@@ -50,6 +50,7 @@ Deponun **hiçbir otomasyonu yoktur**: `.github/workflows` yok, dağıtım beti�
 | --- | --- | --- |
 | AI Studio applet (Cloud Run) | AI Studio projesindeki dosya kopyası (Drive tabanlı), GitHub **değil** | Değişiklik AI Studio projesine alınır, sonra arayüzdeki Share/Deploy |
 | Firebase Hosting | yerel `dist/` | `npm run build` → `firebase deploy --only hosting` |
+| Kendi sunucu (Raspberry Pi) | yerel `dist/` | `npm run deploy:pi` — bkz. `kendi-sunucu/README.md` |
 
 Yani Claude Code ile yapılan bir değişiklik GitHub'a itildiğinde AI Studio'daki
 applet'i **etkilemez**; applet kendi kopyasından dağıtılır. Yayındaki applet'in eski
@@ -69,10 +70,13 @@ servis çalışanıdır. Üretilen `sw.js` gezinme isteklerini
 - `index.html` → `controllerchange` olayında sayfa **bir kez** yenilenir
   (`swYenilendi` bayrağı sonsuz döngüyü engeller).
 
-`firebase.json` bunu sunucu tarafında tamamlar: `index.html`, `sw.js` ve
-`manifest.webmanifest` için `no-cache`, `/assets/**` ve `workbox-*.js` için
+`firebase.json` bunu sunucu tarafında tamamlar: `index.html`, `sw.js`, `surum.json`
+ve `manifest.webmanifest` için `no-cache`, `/assets/**` ve `workbox-*.js` için
 `immutable`. Giriş belgesi veya `sw.js` önbelleklenirse yeni dağıtım eski kabuğun
-arkasında görünmez kalır. Cloud Run tarafında bu başlıkları biz yönetmiyoruz.
+arkasında görünmez kalır. Cloud Run tarafında bu başlıkları biz yönetmiyoruz;
+`kendi-sunucu/nginx.conf` ve `kendi-sunucu/Caddyfile` aynı kuralları kendi sunucu
+hattı için tekrarlar. **Üç dosya birlikte değişir** — birini güncelleyip diğerini
+bırakmak, hattın birinde bu tuzağı geri getirir.
 
 ### Sürüm damgası ve kayma denetimi
 
